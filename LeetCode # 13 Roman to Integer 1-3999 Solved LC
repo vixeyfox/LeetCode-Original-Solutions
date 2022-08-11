@@ -1,0 +1,56 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Aug 11 12:48:26 2022
+
+@author: vixey foxwish
+"""
+
+class Solution:
+    def romanToInt(self, s: str) -> int:
+# This initializes the original value for the "sum" at zero for the beginning        
+        sum = 0
+        for char in s:
+# This adds up the roman to arabic numerals conversion for the six letters of the 1-3999 test cases            
+            if char == "M":
+                this_char = 1000
+            elif char == "D":
+                this_char = 500
+            elif char == "C":
+                this_char = 100
+            elif char == "L":
+                this_char = 50
+            elif char == "X":
+                this_char = 10
+            elif char == "V":
+                this_char = 5
+            elif char == "I":
+                this_char = 1
+            sum += this_char
+        for index in range(len(s)):
+# This checks for if the next letter corresponds to a greater value, which is an allowed exception 
+# to the simple case of summing each letter for how many times it appears individually (base case)            
+# In the case of IV, which is 4, summing each numeral is 1 + 5 = 6,
+# so 5 - 1 = 4 is adjusted to be 2 less            
+
+            if s[index] == "I" and s[(index+1)%len(s)] == "V" and index+1 < len(s):
+                sum -= 2
+# In the case of IX, which is 9, summing each numeral is 1 + 10 = 11,
+# so 10 - 1 = 9 is adjusted to be 2 less                 
+
+            if s[index] == "I" and s[(index+1)%len(s)] == "X" and index+1 < len(s):
+                sum -= 2
+# Likewise for XL = 40 and XC = 90, these are 20 less than
+# 10 + 50 = 60 and 10 + 100 = 110, respectively          
+   
+            if s[index] == "X" and s[(index+1)%len(s)] == "L" and index+1 < len(s):
+                sum -= 20
+            if s[index] == "X" and s[(index+1)%len(s)] == "C" and index+1 < len(s):
+                sum -= 20
+# Likewise for CD = 400 and CM = 900, these are 200 less than
+# 100 + 500 = 600 and 100 + 1000 = 1100, respectively         
+        
+            if s[index] == "C" and s[(index+1)%len(s)] == "D" and index+1 < len(s):
+                sum -= 200
+            if s[index] == "C" and s[(index+1)%len(s)] == "M" and index+1 < len(s):
+                sum -= 200
+        return(sum)
