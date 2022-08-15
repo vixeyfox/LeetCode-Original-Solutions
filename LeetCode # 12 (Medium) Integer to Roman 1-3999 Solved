@@ -165,7 +165,7 @@ class Solution:
             else:
                 last_place = ""
     # If any of these are empty strings, they don't appear in the final result 
-    # Input is 1 through 3999 (Roman numeral form) so zero itself is not considered            
+    # Input is 1 through 3999 (given in integer form) so zero itself is not considered            
         complete_number = first_place + second_place + second_to_last + last_place
                 
         return(complete_number)
