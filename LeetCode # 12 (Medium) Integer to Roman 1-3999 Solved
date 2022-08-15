@@ -117,7 +117,7 @@ class Solution:
                # This is when the middle digit of the three current digits is 0 
                number = remainder
                # This makes the new number just the final digit D of B0D
-               string_form = str(string_form[-1])
+               string_form = string_form[-1]
                # It will next be used in the code for one digit numbers
                
            elif string_form[1] != 0:
