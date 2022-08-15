@@ -148,7 +148,7 @@ class Solution:
     # Remove the tens place associated value to be left with a single digit remainder
             number = remainder
                 # Take final digit of the two digit string 
-            string_form = str(string_form[-1])
+            string_form = string_form[-1]
 
         if len(string_form) == 1:
             if number >= 1 and number <= 3:
