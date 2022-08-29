@@ -1,0 +1,78 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Aug 29 15:56:19 2022
+
+@author: vixey foxwish
+"""
+# Leetcode "Add Binary" Problem 67 (Easy) Solved 8/29/2022
+# Given two binary strings a and b, return their sum as a binary string
+
+class Solution:
+    def addBinary(self, a: str, b: str) -> str:
+        
+        # Step 1: convert each binary input to decimal
+        # a = input('input binary string a: \n')
+        # b = input('input binary string b: \n')
+        # Code used for troubleshooting test cases via user input
+        # a and b are given as binary strings
+        #initialize variables
+        position_a, position_b = 0,0
+        place_a, place_b = len(a), len(b)
+        value_a, value_b = 0,0
+        # Convert each of a and b from binary to decimal
+        for digit_a in a:
+            position_a += 1
+            if digit_a == str(1):
+                power_a = len(a) - position_a
+                value_a += 2**power_a
+        for digit_b in b:
+            position_b += 1
+            if digit_b == str(1):
+                power_b = len(b) - position_b
+                value_b += 2**power_b
+
+        # Step 2: Add them together with decimal addition
+        decimal_sum = value_a + value_b
+        #print(decimal_sum, "decimal sum")
+
+        length_result = 0
+
+        #10011 is 19 exponent 4 still leaves rem so length_result = 5
+
+        # Step 3: Convert the sum back into binary (find how long it should be)
+        # The problem statement specifies the length can be up to 10^4 or 10,000.
+        # Floor division detects at what point 2^exponent exceeds the decimal sum (output)
+        for exponent in range(0,10001):
+            if decimal_sum//(2**exponent) == 0:
+                length_result = exponent
+                break
+
+        # print(length_result)        
+        # Now there's a decimal sum and it is known to be length_result long in binary
+        # =============================================================================
+        working_answer = ""
+
+        # finding the binary number representing the decimal sum
+        for power in range(0, length_result):
+            # See example of 19 which is 10011
+            # Power = 0 then 19%2 == 1 and add a trailing 1 and get 18 left over
+            # Power = 1 then 18%4 == 2 and add a trailing 1 and get 16 left over 
+            # Power = 2 then 16%8 != 4 and add a trailing 0
+            # Power = 3 then 16%16 != 8 and add a trailing 0
+            # Power = 4 then 16%32 == 16 and add a final 1 to the front and 0 left over
+            #(also power = 4 is the final range value tested for range(0,5) )
+            if decimal_sum%(2**(power+1)) == (2**power):
+                working_answer = "1" + working_answer
+                decimal_sum -= 2**power
+            else: 
+                working_answer = "0" + working_answer
+         # Special cases for very small numbers or one of the values being 0 handled individually       
+        if a and b == "0":
+            working_answer = "0"
+
+        if a == "0" and b != "0":
+            working_answer = b
+        if a != "0" and b == "0":
+            working_answer = a    
+
+        return(working_answer)        
