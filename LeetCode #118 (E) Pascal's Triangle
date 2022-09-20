@@ -4,6 +4,9 @@ Created on Tue Sep 20 15:31:50 2022
 
 @author: vixey foxwish
 """
+# Original solution to Leetcode #118 Pascal's Triangle. Solved 9/20/2022. Additionally, code can be refined to return 
+# just the last row if desired pascal_generator(rowIndex)[-1]
+# With runtime of only 28ms, my code is faster than 97.77% of Python3 submissions to leetcode for this problem.
 
 class Solution:
     def generate(self, numRows: int) -> List[List[int]]:
