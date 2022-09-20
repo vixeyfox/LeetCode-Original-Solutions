@@ -1,0 +1,47 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Sep 20 15:31:50 2022
+
+@author: vixey foxwish
+"""
+
+class Solution:
+    def generate(self, numRows: int) -> List[List[int]]:
+
+        # Pascal's Triangle Generator
+        #            1
+        #           1 1
+        #          1 2 1
+        #         1 3 3 1   # pre_row is len 4
+        #        1 4 6 4 1  # next_row must become len 5. needs len(pre_row) - 1 = 3 values inserted into [1,1]
+        #           ...
+
+
+
+        # First, it is necessary to make a function that can generate the next row of 
+        # Pascal's triangle given any preceding row. This next_row will have 1 on its
+        # ends in any case, so it can start as [1,1]. The input is pre_row, the 
+        # preceding row
+
+        # make a function that generates the next row, given the previous row
+
+        def next_pascal_row(pre_row: list) -> list:
+            next_row = [1, 1]                # For loop iterates through preceding row to build the next row's middle values
+            for index in (range(len(pre_row)-1)):    # there will be len(pre_row)-1 summation operations to perform
+                drop_sum = pre_row[index] + pre_row[index + 1] # sum two values of preceding row 
+                next_row.insert(index + 1, drop_sum)           # insert the sum into the next row to build the next row
+            return next_row
+
+        # make a function that generates Pascal's triangle in a for loop using this function
+
+        def pascal_generator(row_count: int) -> list: # Produces Pascal's Triangle, row_count rows, as list of lists
+            row_count -= 1                            # the number of rows below [1] that remain to be built
+            pascal_list = [[1]]                       # start with the topmost row of Pascal's triangle
+            build_next = next_pascal_row(pascal_list[-1]) # build the next row after the most recent one generated
+            for row_number in range(row_count):           # for loop to build out the following rows, appending each in turn
+                build_next = next_pascal_row(pascal_list[-1]) #relies on the most recent row that already exists
+                pascal_list.append(build_next)                # adds this one into the complete build (end of for loop body)
+
+            return pascal_list
+
+        return pascal_generator(numRows)
