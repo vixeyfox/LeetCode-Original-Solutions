@@ -1,0 +1,17 @@
+class Solution:
+    def fib(self, n: int) -> int:
+        """ Function that returns the nth Fibonacci number for some integer 0 <= n <= 30
+        Original code - Vixey Foxwish - Leetcode 509. Fibonacci Number - Solved 9/28/2022
+        Faster than 80.79% of Python3 online submissions for Fibonacci Number"""
+        
+        # The first two Fibonacci numbers are 0 and 1 (answers to fib(0) and fib(1))
+        list_fibo = [0, 1]
+        if n == 0 or n == 1:
+            return list_fibo[n]
+        
+        else: # For n >= 2 
+           # range from 2 up to and including n. Make the next Fibonacci number the sum of the preceding two numbers
+            for i in range(2, n+1):
+                next = list_fibo[-2] + list_fibo[-1] # second to last and last number
+                list_fibo.append(next)
+            return list_fibo[-1] # return the final nth Fibonacci number
