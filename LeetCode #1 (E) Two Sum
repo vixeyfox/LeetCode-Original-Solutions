@@ -29,7 +29,7 @@ Created on Thu Oct  6 11:49:16 2022
 #                 return [index1, index2]
 # =============================================================================
 
-# if we fix one number, x, we have to search all for y which is value - x
+# if we fix one number, x, we have to search all for y which is target value - x
 # if this does not exist in the list of nums, use continue to move through the for loop more quickly
 # change the array so that this search becomes faster by SORTING
 
