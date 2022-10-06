@@ -8,7 +8,7 @@ Created on Thu Oct  6 11:49:16 2022
 # Solved Two Sum for Leetcode 10/6/2022 Vixey Foxwish Douglas
 # LeetCode #1 (E) Two Sum
 # Best time acheived at 1050 ms runtime (beat 31.38% of python3 submissions)
-# Best memory usage acheived at 15 MB (beats 65.90% of python3 submissions)
+# Best memory usage acheived at 15 MB (beat 65.90% of python3 submissions)
 
 # Return the indices of two values that sum to reach the target number
 # nums = Input: nums = [2,7,11,15], target = 9
