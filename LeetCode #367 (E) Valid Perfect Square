@@ -1,0 +1,48 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Oct  7 16:52:37 2022
+
+@author: vixey foxwish
+"""
+# Leetcode 367 Valid Perfect Square Solved 10/7/2022
+# Runtime 32ms, faster than 93.97% of python3 submissions
+# Memory usage 14 MB, less than 10.19% of python 3 submissions
+# =============================================================================
+# Given a positive integer num, write a function which returns True if num is a perfect square else False.
+# 
+# Follow up: Do not use any built-in library function such as sqrt.
+#
+# Example 1:
+# 
+# Input: num = 16
+# Output: true
+# Example 2:
+# 
+# Input: num = 14
+# Output: false
+#  
+# 
+# Constraints:
+# 
+# 1 <= num <= 2^31 - 1
+# =============================================================================
+class Solution:
+    def isPerfectSquare(self, num: int) -> bool:
+# num = 16 code used for troubleshooting various numbers   
+        ans = num // 2  # bisection search initialized with floor division of num by 2
+        low = 0 # lower bound for ans
+        high = num # upper bound for ans
+        if num == 1: # the only positive integer where we can't build a search range wide enough for the code below to work
+            return True
+        while ans**2 != num and low + 1 != high: # still need to approximate closer ans as the integer sqrt of num AND
+# hasn't yet converged btw two non-working int sqrts whose squares are < num and > num (needs to exit while, give False)
+            if ans**2 < num:
+                low = ans # ans was too small and is a new lower bound
+                ans = (low + high) // 2 # bisection search, get new guess for answer, round down to integer w/ floor division
+            elif ans**2 > num:
+                high = ans # ans was too high and is a new upper bound
+                ans = (low + high) // 2 # bisection search, get new guess for answer, round down to integer w/ floor division
+        if ans**2 == num: # found the integer sqrt of num
+            return True
+        elif low + 1 == high: # the approximation went for so long it converged on low**2 < num < high**2 and low + 1 = high
+            return False
