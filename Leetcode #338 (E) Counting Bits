@@ -1,0 +1,125 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Oct  6 17:02:34 2022
+
+@author: vixey foxwish
+"""
+# Solved LeetCode 338. Counting Bits (Easy) Leetcode #338 (E) Counting Bits 
+# First solution achieved on 10/6/2022, may return later to speed it up a bit
+# Runtime = 1806 ms, Memory Usage 20.8 MB
+# Faster than 5% of python3 submissions, less memory usage than 30% of python3 submissions
+
+# could make it faster by noting that larger binary numbers are leading digits added to smaller binary numbers
+# which have the same remainder left over (same binary string) when subtracting the power of two that separates them
+# e.g. 19 is 10011 and 3 is 11, so one could conceivably try to reference the binary representations of values
+# to accelerate this overall process and avoid duplication of calculation work for the larger numbers to binary str
+
+# Given an integer n, return an array ans of length n + 1 such that for each i 
+# (0 <= i <= n), ans[i] is the number of 1's in the binary representation of i.
+# =============================================================================
+# 
+# Example 1:
+# 
+# Input: n = 2
+# Output: [0,1,1]
+# Explanation:
+# 0 --> 0
+# 1 --> 1
+# 2 --> 10
+# Example 2:
+# 
+# Input: n = 5
+# Output: [0,1,1,2,1,2]
+# Explanation:
+# 0 --> 0
+# 1 --> 1
+# 2 --> 10
+# 3 --> 11
+# 4 --> 100
+# 5 --> 101
+
+#Constraints:
+#0 <= n <= 10^5
+# =============================================================================
+
+def in_binary(n: int) -> str:
+    """ Function in_binary converts an integer n into its binary representation, returned as a string.
+    To do this efficiently, we first want to know how long the integer n would be if it were a binary string
+    
+    This value will be called boundary. For instance, 19 has "boundary" of 5, meaning it's 10011 
+    seeing as 2**4 + 2**2 + 2**1 = 16 + 2 + 1 = 19
+    
+    Note that the boundary for n = 19 is 5 as range(5) = 0,1,2,3,4 iterable will reach up to 2**4 = 16)
+    The boundary for n = 19 is 5, meaning 2**4 < (n = 19) < 2**5 so n can be a binary number of 4+1 = 5 digits
+    In other words, "boundary" is a number that represents the maximum* length of n, when converted to binary
+    (*without leading zeros as in 0011 = 3, where leading zeros waste time in generating a binary representation)
+    """
+# print('called in binary for n =', n) testing code used for troubleshooting
+# note that 2**17 = 131,072 and 2**16 is 65,536 and this problem states the maximum value for n is 100,000 = 10e5
+    # n has at most 2**16 as a power in its binary representation
+    # 0...16 covers all possible 2**0 to 2**16 powers arising from 1s in binary form of n, at most 17 digits
+    # so we know that, for this problem, the largest possible "boundary" to arise will be 17
+    
+# thus the largest possible range needed to search is range(17), but optimize code to go faster and not
+    # waste time adding leading zeros to numbers that have a shorter binary representation than 17 digits long
+    # that is to say, 00...0011 is a binary number equaling 3, and so on, but the leading zeros are time wasters
+    
+# this largest power of 2 that needs to be considered, aka "boundary," is minimally 0 [0,1,2]->[0,1,10]->[0,1,1]
+    # in other words 0 is a special case as it is even less than 2**0 which equals 1, so start boundary at 0
+    # to avoid getting a leading zero as in 010, 011, etc. which would otherwise appear if starting boundary at 1
+    # this also technically means the binary version of 0 is given as empty string, (which has 1 occur 0 times)
+    # this is acceptable, because it means that other numbers in binary form will not have a leading zero in them!
+        
+# see that [0,1,2,3,4,5,6,7]->[0,1,10,11,100,101,110,111]->[0,1,1,1,2,1,2,2,3] are the target outputs to generate
+    # the boundary values thus turn out to be [1,2,3,3,4,4,4,4] as range(boundary) tells
+    # the range of possible powers (to raise 2 to the power of) that will be needed to represent an integer in binary    
+    boundary = 0
+    for exponent in range(17): # the largest possible range, leading up to exponent 16 and boundary 17
+        if n // 2**exponent >= 1: # if true, a higher exponent in 2**exponent is needed to represent n in binary
+            boundary += 1
+        elif n // 2**exponent < 1:
+            break # don't waste time testing larger values in the range once this boundary value has been reached
+    
+    working_answer = '' # empty string to initialize variable
+    for power in range(boundary):
+# See example of 19 which is 10011, with boundary of 5, and thus range(5) generating 0,1,2,3,4 as the iterable
+    # Power = 0 then 19%2 == 1 and add a trailing 1 and get 18 left over
+    # Power = 1 then 18%4 == 2 and add a trailing 1 and get 16 left over 
+    # Power = 2 then 16%8 != 4 and add a trailing 0
+    # Power = 3 then 16%16 != 8 and add a trailing 0
+    # Power = 4 then 16%32 == 16 and add a final 1 to the front and 0 left over
+        if n%(2**(power+1)) == (2**power):
+            working_answer = "1" + working_answer
+            n -= 2**power # see how much leftover remainder of n remains to be represented in binary
+        else: 
+            working_answer = "0" + working_answer
+    # get rid of the one leading zero that may someti
+    n_as_binary = working_answer
+# print('returned in binary for n', n, 'as the string', n_as_binary) testing code used for troubleshooting
+    return n_as_binary # this is the output of this function which takes in integer n and gives out binary string form
+
+def how_many_1s(binary_number: str) -> int:
+    """ Function how_many_1s counts how many times 1 appears in its input, 
+    which is a number as a binary string form, e.g. "10011" for 19
+    """
+# print('called how_many_1s for binary number =', binary_number)testing code used for troubleshooting
+    length_of_binary_number = len(binary_number)
+    how_many_1s = 0 # initialize variable; this helps when the binary number 0 is just 0 and has no 1s present
+    for position in range(length_of_binary_number):
+        if binary_number[position] == '1':
+            how_many_1s += 1
+# print('returned how many 1s', how_many_1s, 'found in the string', binary_number) testing code used for troubleshooting 
+    return how_many_1s
+# Finally, with these two functions defined, proceed to generate the solution
+#n = 5 #testing code used for troubleshooting
+answer_list = [] # initialize list of answers "how many 1s in binary form of integer n" as empty string
+for integer in range(n+1): # range(n+1) generates n+1 values from 0, 1, ..., n-1, n inclusive
+    int_in_binary = in_binary(integer) # convert n to its binary form as a string of bits 
+    count_of_1s = how_many_1s(int_in_binary) # takes input of binary string, gives output of how many 1s appear
+    answer_list.append(count_of_1s) # add the answer to the list, completing the for loop for this integer 0...n
+    
+# print(answer_list) #testing code used for troubleshooting'
+return answer_list
+    
+    
+    
