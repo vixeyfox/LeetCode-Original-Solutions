@@ -32,36 +32,37 @@ Created on Thu Oct  6 11:49:16 2022
 # if we fix one number, x, we have to search all for y which is target value - x
 # if this does not exist in the list of nums, use continue to move through the for loop more quickly
 # change the array so that this search becomes faster by SORTING
+class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        length = len(nums)
+        nums_sorted = nums[:] # uses slicing to make a copy of the list that will be sorted, changing the indices
+        nums_sorted.sort()
+        # Special case to handle the same number appearing twice, which can mess with looking up indices below
+        if target/2 in nums_sorted:
+            first_place = nums_sorted.index(target/2) # the first time the value occurs as in [3,3] with target 6
+            if nums_sorted[first_place + 1] == nums_sorted[first_place]: # if the same number is twice in the nums
+                original_place_1 = nums.index(target/2) # the first time 
+                nums.pop(original_place_1) # pop the first 3 as in [3,3] with target 6
+                original_place_2_adjusted = nums.index(target/2) # for instance, to get to next 3 in [3,3] targeting 6
+                original_place_2 = original_place_2_adjusted + 1
+                #print([original_place_1, original_place_2]) code for troubleshooting in console
+                return [original_place_1, original_place_2]
 
-length = len(nums)
-nums_sorted = nums[:] # uses slicing to make a copy of the list that will be sorted, changing the indices
-nums_sorted.sort()
-# Special case to handle the same number appearing twice, which can mess with looking up indices below
-if target/2 in nums_sorted:
-    first_place = nums_sorted.index(target/2) # the first time the value occurs as in [3,3] with target 6
-    if nums_sorted[first_place + 1] == nums_sorted[first_place]: # if the same number is twice in the nums
-        original_place_1 = nums.index(target/2) # the first time 
-        nums.pop(original_place_1) # pop the first 3 as in [3,3] with target 6
-        original_place_2_adjusted = nums.index(target/2) # for instance, to get to next 3 in [3,3] targeting 6
-        original_place_2 = original_place_2_adjusted + 1
-        #print([original_place_1, original_place_2]) code for troubleshooting in console
-        return [original_place_1, original_place_2]
+        for index1 in range(length): 
+            seeking = target - nums_sorted[index1] # if the sought number is found in the nums, then look for it anew
+            #print(seeking, 'seeking', nums[index1], 'nums[index1]', index1, 'index1') CODE useful for troubleshooting
+            if seeking in nums_sorted and nums_sorted.index(seeking) != index1: 
+                # so as to not look for 3 AGAIN in [3,2,4] targeting 6
+                # only keep going if the number that will work to reach the target is found elsewhere in the list of nums
+                sought_index = nums_sorted.index(seeking)
+                # this calls forth the index for the number that is sought to pair with the index1 num to reach target
+                if nums_sorted[index1] + nums_sorted[sought_index] == target:
+                    # ^ Error checking condition, should not get to this code without a match, but double checks it does work
+                    original_place_1 = nums.index(nums_sorted[index1]) # sorting changed the indices so look for where
+                                                                       # it was originally located BEFORE sorting
+                    original_place_2 = nums.index(nums_sorted[sought_index]) # likewise, get ORIGINAL indices used in nums
+                   # print([original_place_1, original_place_2]) # use for troubleshooting in console
+                    return [original_place_1, original_place_2] # returns the verified working answer with original indices
+            else:
+                continue # if there is no match possible to reach target, try again with a new index, don't waste time n^2
 
-for index1 in range(length): 
-    seeking = target - nums_sorted[index1] # if the sought number is found in the nums, then look for it anew
-    #print(seeking, 'seeking', nums[index1], 'nums[index1]', index1, 'index1') CODE useful for troubleshooting
-    if seeking in nums_sorted and nums_sorted.index(seeking) != index1: 
-        # so as to not look for 3 AGAIN in [3,2,4] targeting 6
-        # only keep going if the number that will work to reach the target is found elsewhere in the list of nums
-        sought_index = nums_sorted.index(seeking)
-        # this calls forth the index for the number that is sought to pair with the index1 num to reach target
-        if nums_sorted[index1] + nums_sorted[sought_index] == target:
-            # ^ Error checking condition, should not get to this code without a match, but double checks it does work
-            original_place_1 = nums.index(nums_sorted[index1]) # sorting changed the indices so look for where
-                                                               # it was originally located BEFORE sorting
-            original_place_2 = nums.index(nums_sorted[sought_index]) # likewise, get ORIGINAL indices used in nums
-           # print([original_place_1, original_place_2]) # use for troubleshooting in console
-            return [original_place_1, original_place_2] # returns the verified working answer with original indices
-    else:
-        continue # if there is no match possible to reach target, try again with a new index, don't waste time n^2
-    
