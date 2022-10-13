@@ -1,0 +1,85 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Oct 13 10:12:51 2022
+
+@author: vixey foxwish
+"""
+# LeetCode #38 (Medium) Count and Say  Solved 10/13/2022
+# Runtime 130ms (beats 6.55%)
+# Memory usage  (beats 54.21%)
+# =============================================================================
+# 38. Count and Say Medium
+# 
+# The count-and-say sequence is a sequence of digit strings defined by the recursive formula:
+# 
+# countAndSay(1) = "1"
+# countAndSay(n) is the way you would "say" the digit string from countAndSay(n-1), 
+# which is then converted into a different digit string.
+# To determine how you "say" a digit string, split it into the minimal number of 
+# substrings such that each substring contains exactly one unique digit. Then for
+#  each substring, say the number of digits, then say the digit. Finally, concatenate every said digit.
+# 
+# For example, the saying and conversion for digit string "3322251":
+#     two 3's three 2's one 5 one 1 -> 23321511
+# 
+# Given a positive integer n, return the nth term of the count-and-say sequence.
+# 
+# Example 1:
+# 
+# Input: n = 1
+# Output: "1"
+# Explanation: This is the base case.
+# Example 2:
+# 
+# Input: n = 4
+# Output: "1211"
+# Explanation:
+# countAndSay(1) = "1"
+# countAndSay(2) = say "1" = one 1 = "11"
+# countAndSay(3) = say "11" = two 1's = "21"
+# countAndSay(4) = say "21" = one 2 + one 1 = "12" + "11" = "1211"
+# countAndSay(5) = say "1211 = one 1 one 2 two 1s "111221"
+# 
+# Constraints:
+# 
+# 1 <= n <= 30
+# ===========================================================================
+list_of_CAS_outputs = ['1'] # List of Count and Say Outputs. Starts with just 1.
+
+def read_string_next(previous_string): 
+    """ This reads a previous string using the Count and Say method. It keeps a running tab of how many
+    times a particular value has appeared consecutively. It then records this upon getting to the next
+    different numerical value. This requires special code (the furthest indented if statement) at the end
+    to track when it has reached the end of the overal sequence via the Count and Say method. This 
+    function is designed to be called in a range iteration for loop to generate the necessary values up to n."""
+    
+    prev_length = len(previous_string) # the length of previous string 
+    how_many = 1 # initialize integer counter  (how many times a value has appeared; must be non-negative)
+    answer = "" # the answer string is initialized as an empty string
+    
+    for position in range(prev_length): # iterate through 0, 1, ..., prev_length-1 indices of the previous string
+        current_val = previous_string[position]    # current value is whatever is at the present index
+        
+        if position == 0 and prev_length == 1: # special case for the first Count and Say output which is just "1"
+            answer = str(how_many) + current_val # to get 11 from the first 1, in other words, "one 1" -> "11"
+            
+# if the position index is positive and it matches the preceding value, add to how_many    
+        if position > 0 and current_val == previous_string[position-1]: # a continuation of previous value
+            how_many += 1 # it appeared one more time
+            if position == prev_length - 1: # reached the end of the string, now need to capture this final stretch
+                answer += str(how_many) + current_val
+            continue # useful if it has NOT yet reached the end
+        
+# if the position index is positive and it does not match the preceding value, record previous stretch
+        elif position > 0 and current_val != previous_string[position-1]: # if the value changes to new number
+            answer += str(how_many) + previous_string[position-1] # recording the stretch it just finished counting
+            how_many = 1 # reset so this counts number of appearances of the next value 
+            if position == prev_length - 1: # reached the end, need this final stretch 
+                answer += str(how_many) + current_val 
+            continue # useful if it has NOT yet reached the end         
+    return answer
+        
+for number in range(1,n): # 1, 2, 3, ..., n-1
+    next_readout = read_string_next(list_of_CAS_outputs[number-1])
+    list_of_CAS_outputs.append(next_readout)
+return list_of_CAS_outputs[-1] # the final value is the value for countAndSay(n)
