@@ -1,0 +1,96 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Oct 14 12:28:09 2022
+
+@author: vixey foxwish
+"""
+# =============================================================================
+# LeetCode 334. Medium Increasing Triplet Subsequence Solved 10/14/2022
+# Runtime: 1531 ms, faster than 24.59% of Python3 online submissions for Increasing Triplet Subsequence.
+# Memory Usage: 28.1 MB, less than 6.10% of Python3 online submissions for Increasing Triplet Subsequence.
+# 
+# Given an integer array nums, return true if there exists a triple of indices
+#  (i, j, k) such that i < j < k and nums[i] < nums[j] < nums[k]. 
+#  If no such indices exists, return false.
+# 
+# Example 1:
+# 
+# Input: nums = [1,2,3,4,5]
+# Output: true
+# Explanation: Any triplet where i < j < k is valid.
+# Example 2:
+# 
+# Input: nums = [5,4,3,2,1]
+# Output: false
+# Explanation: No triplet exists.
+# Example 3:
+# 
+# Input: nums = [2,1,5,0,4,6]
+# Output: true
+# Explanation: The triplet (3, 4, 5) is valid because nums[3] == 0 < nums[4] == 4 < nums[5] == 6.
+#  
+# 
+# Constraints:
+# 
+# 1 <= nums.length <= 5 * 10**5
+# -2**31 <= nums[i] <= 2**31 - 1
+#  
+# Follow up: Could you implement a solution that runs in O(n) time complexity and O(1) space complexity?
+# =============================================================================
+#nums = [1, 0, 0, 0, -1, 0, 0, 0, 0, 0, 100] # A case similar to this caused original algorithm to go past time limit, must handle it
+class Solution:
+    def increasingTriplet(self, nums: List[int]) -> bool:
+        len_nums = len(nums)
+        found_exception_yet = False
+        if len_nums < 3:
+            return False
+        looks_bad = 0
+        for index in range(len_nums-2):
+            if nums[index] > nums[index + 1] > nums[index + 2]: # worst case scenario, numbers all decreasing in sequence
+                looks_bad += 1
+        if looks_bad == len_nums - 2: # saves time by eliminating massive lists of strictly decreasing numbers 
+            return False
+
+        for index in range(len_nums): # from 0,1,2,3,4 since len_nums = 5 ... build up all possible i, j, k triplets in a list of lists
+            if index == 0:
+                possible_i = [[index, nums[index]]] # initialize list of candidates for i as [index, nums[index]] IN A list of these
+                possible_nums_i = [nums[index]]
+            elif index == 1:
+                possible_j = [[index, nums[index]]]  # index 1 is the first possible j
+                possible_nums_j = [nums[index]]
+            elif index == 2:
+                possible_k = [[index, nums[index]]]  # index 2 is the first possible k
+                possible_nums_k = [nums[index]]
+
+            if index >= 1:
+                if nums[index] not in possible_nums_i: # avoid wasteful double counting where nums[index] appears multiple times                           
+                    possible_i.append([index, nums[index]]) # now we have a NEW candidate i value (could be 0, 1, ...)
+                    possible_nums_i.append(nums[index])
+
+            if index >= 2: 
+                if nums[index] not in possible_nums_j: # avoid wasteful double counting where nums[index] appears multiple times  
+                    possible_j.append([index, nums[index]]) # now we have a NEW candidate j value (could be 1, 2, ...)
+                    possible_nums_j.append(nums[index])     
+
+                elif nums[index] > min(possible_nums_i) and not found_exception_yet: # find new possible j if smallest i went down
+                    possible_j.append([index, nums[index]])
+                    possible_nums_j.append(nums[index]) 
+                    found_exception_yet = True  # handles special case of 1, 0, ..., 0, -1, 0, ..., 0, 10 and this general case
+
+            if index >= 3: 
+                if nums[index] not in possible_nums_k: # avoid wasteful double counting where nums[index] appears multiple times   
+                    possible_k.append([index, nums[index]]) # now we have a NEW candidate k value (could be 2, 3, ...)
+                    possible_nums_k.append(nums[index])                     
+
+
+        for index_i in range(len(possible_i)): # all possible [ index, nums[index] ] lists within the larger list of candidates for i
+            for index_j in range(len(possible_j)):
+                for index_k in range(len(possible_k)):
+                    valid_ijk_indices = possible_i[index_i][0] < possible_j[index_j][0] < possible_k[index_k][0]
+                    valid_ijk_values = possible_i[index_i][1] < possible_j[index_j][1] < possible_k[index_k][1]
+                    if valid_ijk_indices and valid_ijk_values:
+                       return True
+                       #print('True')
+                       # print('True at', possible_i[index_i][0], possible_j[index_j][0], possible_k[index_k][0], 'indices i,j,k')
+        return False              
+        #print('False') # only gets to here if there is no valid i,j,k triplet
