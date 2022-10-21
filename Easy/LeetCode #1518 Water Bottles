@@ -1,0 +1,75 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Oct 20 17:40:52 2022
+
+@author: vixey foxwish
+"""
+# Vixey Foxwish Douglas 
+# Solved 10/20/2022 | Special: No official solution by LeetCode | Fast beats ~95%
+# Runtime: 30 ms, faster than 94.67% of Python3 online submissions for Water Bottles.
+# Memory Usage: 13.8 MB, less than 59.62% of Python3 online submissions for Water Bottles.
+
+# ====   LeetCode    ===========================================
+# 1518. Water Bottles (Easy)
+# 
+# There are numBottles water bottles that are initially full of water. You can 
+# exchange numExchange empty water bottles from the market with one full water bottle.
+# 
+# The operation of drinking a full water bottle turns it into an empty bottle.
+# Given the two integers numBottles and numExchange, return the maximum number of water bottles you can drink.
+#  
+# Example 1:
+# 
+# Input: numBottles = 9, numExchange = 3
+# Output: 13
+# Explanation: You can exchange 3 empty bottles to get 1 full water bottle.
+# Number of water bottles you can drink: 9 + 3 + 1 = 13.
+# 
+# Example 2:
+# Input: numBottles = 15, numExchange = 4
+# Output: 19
+# Explanation: You can exchange 4 empty bottles to get 1 full water bottle. 
+# Number of water bottles you can drink: 15 + 3 + 1 = 19.
+#  
+# 
+# Constraints:
+# 1 <= numBottles <= 100
+# 2 <= numExchange <= 100
+# =============================================================================
+
+numBottles = 15
+numExchange = 4
+class Solution:
+    def numWaterBottles(self, numBottles: int, numExchange: int) -> int:       
+        drank_total, drank_this_time, empty, new = 0, 0, 0, 0 
+# initialize variables: number that have been drunk in total, how many drunk this time
+# how many are empty, how many are new
+        
+        while numBottles > 0:
+            valid_reusable = numBottles // numExchange # floor division e.g. 15 // 4 = 3, 9 // 3 = 3, 5 // 2 = 2
+# tells if there are enough bottles that can be consumed to exchange for more, from the starting full bottles alone
+            
+            if valid_reusable > 0: 
+# got at least one new bottle available in exchange for ones drunk this round
+                drank_this_time = numBottles  # all the available bottles were drunk
+                drank_total += drank_this_time # add the number drunk_this_time to drunk_total
+                numBottles -= drank_this_time # the ones that have been drunk are no longer available to be drunk (they are empty now)
+                empty += drank_this_time # the ones that have been drunk that are now empty
+                empty -= valid_reusable * numExchange # the ones used up in this exchange do not remain in the count of empty bottles
+                new = valid_reusable # the integer number of new bottles available from exchanging empty ones (this round)
+                numBottles += new # any new bottles from this cycle are now available to be drunk
+                
+            else: 
+# the ones drunk this cycle, alone, weren't enough to exchange for more 
+                drank_this_time = numBottles # count that all the remaining ones were drunk, though insufficient to exchange for more
+                drank_total += drank_this_time # add the number drunk_this_time to drunk_total
+                empty += drank_this_time # the ones consumed are added to the pool of emtpy bottles though not enough to exchange
+                numBottles -= drank_this_time # now these are now longer available to be drunk
+                
+            if empty // numExchange > 0: 
+# if there are NOW enough leftover empty to exchange for new, but not previously in this run of the code (from top two blocks)
+                empty_exchange = empty // numExchange # there were enough to get at least one new bottle at this stage
+                empty -= numExchange * empty_exchange # the empty ones are exchanged for new bottles
+                numBottles += empty_exchange # the newly exchanged ones added to number of bottles which keeps while loop going
+                
+        return drank_total # returns the total number of bottles drunk after numBottles reaches 0 for the final time and exits loop
