@@ -1,0 +1,67 @@
+# =============================================================================
+# LeetCode 1952. Three Divisors (Easy)
+# SOLVED 10/26/2022 with Two Different Solutions
+ 
+# Given an integer n, return true if n has exactly three positive divisors. Otherwise, return false.
+# An integer m is a divisor of n if there exists an integer k such that n = k * m.
+
+# Example 1:
+
+# Input: n = 2
+# Output: false
+# Explantion: 2 has only two divisors: 1 and 2.
+# Example 2:
+
+# Input: n = 4
+# Output: true
+# Explantion: 4 has three divisors: 1, 2, and 4.
+
+# Constraints:
+
+# 1 <= n <= 10**4
+# =============================================================================
+# Solution 1
+# Runtime: 41 ms, faster than 88.47% of Python3 online submissions for Three Divisors.
+# Memory Usage: 13.9 MB, less than 11.53% of Python3 online submissions for Three Divisors.
+
+# Counts integer divisors and quickly eliminates if > 3 are found
+
+class Solution:
+    def isThree(self, n: int) -> bool:
+        divisors_of_n = set() # set of integers that are divisors of n
+        for integer in range(1,n+1): # range from 1, 2, .., n inclusive 
+            if n % integer == 0: # if integer is a divisor of n 
+                divisors_of_n.add(integer)
+            if len(divisors_of_n) > 3: # saves time for numbers with many divisors
+                return False # eliminated
+        if len(divisors_of_n) == 3:
+            return True
+# ============================================================================
+# Alternate: Solution 2
+# Runtime: 81 ms, faster than 24.73% of Python3 online submissions for Three Divisors.
+# Memory Usage: 13.9 MB, less than 11.53% of Python3 online submissions for Three Divisors.
+
+# Pre-generate primes below 100 and square them (squares are below 10**4)
+# prime**2 is the only kind of number with three divisors (1, prime, and prime**2)
+# Then check if n is in that set
+
+class Solution:
+    def isThree(self, n: int) -> bool:
+        primes = set() # empty set
+        primes.add(2) # the only even prime number
+        for odd_number in range(3, 100, 2): # all odd numbers from 3 to 99
+        # test if each odd number is a prime
+            likely_prime = 0
+            for prime in primes:
+                if odd_number % prime == 0: # it is a composite
+                    break # skip and go to next odd number to test for primality
+                else: # possible prime
+                    likely_prime += 1
+                    continue # it looks likely to be a valid prime
+            if likely_prime == len(primes): # no smaller primes are divisors of it
+                primes.add(odd_number)  # so it must be the next prime
+        # now all prime numbers have been generated
+        three_divisors = set() # initialize set of numbers (prime**2) with three divisors
+        for prime in primes:
+            three_divisors.add(prime**2)
+        return n in three_divisors
