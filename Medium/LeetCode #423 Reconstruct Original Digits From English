@@ -1,0 +1,130 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Oct 27 12:38:51 2022
+
+@author: vixey foxwish
+"""
+# SOLVED 10/27/2022
+# Runtime: 92 ms, faster than 60.06% of Python3 online submissions for Reconstruct Original Digits from English.
+# Memory Usage: 14.4 MB, less than 44.54% of Python3 online submissions for Reconstruct Original Digits from English.
+
+# LeetCode 423. Reconstruct Original Digits from English (Medium)
+# Given a string s containing an out-of-order English representation of digits 0-9, 
+# return the digits in ascending order.
+
+# Example 1:
+# Input: s = "owoztneoer"
+# Output: "012"
+
+# Example 2:
+# Input: s = "fviefuro"
+# Output: "45"
+ 
+# Constraints:
+# 1 <= s.length <= 105
+# s[i] is one of the characters ["e","g","f","i","h","o","n","s","r","u","t","w","v","x","z"].
+# s is guaranteed to be valid.
+# =============================================================================
+s = "fvievenesenniroufwoterozfviefuro" # for testing, yields 02445579
+s = 'egithhreetenowot' # for testing, yields 1238
+
+class Solution:
+    def originalDigits(self, s: str) -> str:
+        # Iterate through string s
+        # to build up dictionary of keys: letter, values: how many occurrences
+        letters_frequencies = dict() # initialize dictionary
+        
+        for character in s:
+            if character not in letters_frequencies.keys(): # has not counted it before
+                letters_frequencies[character] = 1
+            else: # it already showed up at least once, so add 1 to the total count
+                letters_frequencies[character] += 1
+        
+        # We will build the answer from a second dictioary:
+        # keys: number words, values: how many times they are found in s
+        words_frequencies = dict()
+        
+        # Make a reusable function that removes a given number from the string s 
+        # in terms of all of its letters, adjusting how many of those letters still
+        # remain, and storing how many times that number appeared
+        
+        def remove_number(letter: str, word: str, value: int):
+            ''' This function will take note of a letter that can uniquely identify
+            how many times a given number word occurs in string s, at that point in 
+            the program's operation. (Specifity improves as this function is used more times)
+            
+            This 'letter' is a one character string. This function will also account for 
+            removing all the other letters (associated with that number word) from the 
+            string s, in terms of updating the dictionary counts for how many times a
+            given letter still occurs in string s (with its number word source not yet 
+            accounted for and removed as of yet)
+            
+            This function does this by iterating through the multi character string
+            'word'. It also stores how many times the number word occurred in the 
+            string s. It stores this in the words_frequencies dictionary with the key
+            as the integer value of the number word. 
+            
+            For instance, for the actual parameters ('z', 'zero', 0) it works like these
+            actions as the following code (original attempt before using this function):
+            NOTE that function also checks if the letter is there (matters at Part 2 and later)
+            
+            if 'z' in letters_frequencies.keys():
+                 how_many_zeroes = letters_frequencies['z']
+            # make sure that letters used up in 'zero' appearances are not counted later (e,r,o)
+                 letters_frequencies['z'] -= how_many_zeroes 
+            # not necessary since z truly unique, never seen elsewhere, but illustrates the process
+                # note that removing non-unique letters can matter later on
+                # we don't want to double count letters (used up by zero)
+                 letters_frequencies['e'] -= how_many_zeroes 
+                 letters_frequencies['r'] -= how_many_zeroes 
+                 letters_frequencies['o'] -= how_many_zeroes
+                 words_frequencies[0] = how_many_zeroes # record how many times zero appeared   
+             '''
+            if letter in letters_frequencies.keys(): 
+                # important since in some strings s a number word and its characteristic letter never appear
+                how_many_number_words = letters_frequencies[letter] # uniquely identifying letter
+                for character in word:
+                    if character in letters_frequencies:
+                    # updates letter frequencies
+                        letters_frequencies[character] -= how_many_number_words 
+                    # how many times number word appears, key: int
+                        words_frequencies[value] = how_many_number_words 
+                
+        # First note that since s is guaranteed to be valid, we start by looking for truly unique letters
+        # where unique letters are letters that only appear in a single number word no matter what
+        
+        # Part 1: Deal with number words identifiable by unique letters
+        # zero: z, two: w, six: x, eight: g
+        remove_number('z', 'zero', 0)
+        remove_number('w', 'two', 2)
+        remove_number('x', 'six', 6)
+        remove_number('g', 'eight', 8)
+        
+        # Part 2: now the only remaining letters in s are resulting from one,three,four,five,seven,nine
+        # meaning that three is the only source of remaining letter h found in string s
+        # and that seven is the only source of remaining letter s found in string s
+        remove_number('h', 'three', 3)
+        remove_number('s', 'seven', 7)
+            
+        # Part 3: now the only remaining letters in s are resulting from one,four,five,nine
+        # meaning that four is the only remaining source of letter r found in string s
+        # and that five is the only source of remianing letter v found in string s
+        remove_number('r', 'four', 4)
+        remove_number('v', 'five', 5)
+        
+        # Part 4: now the only remaining letters in s are resulting from one,nine
+        # meaning that one is the only source of the remaining letter o found in string s 
+        # and that nine is the only source of the remaining letter i found in string s
+        remove_number('o', 'one', 1)
+        remove_number('i', 'nine', 9)
+        
+        # Part 5: Now the dictionary words_frequencies with integer digits as keys and 
+        # number word frequencies as values is used to build the output in ascending order
+        ascending_digits = sorted(words_frequencies.keys()) # get integers low to high
+        answer = '' # build answer string from concatenation starting with empty string
+        for digit in ascending_digits:
+            how_many_of_digit = words_frequencies[digit]
+            answer += how_many_of_digit * str(digit) # need answer as a string
+        return answer
+
+# print(answer)
