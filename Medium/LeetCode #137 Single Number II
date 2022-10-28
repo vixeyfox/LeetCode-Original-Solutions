@@ -1,0 +1,54 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Oct 28 13:15:32 2022
+
+@author: vixey foxwish
+"""
+# SOLVED 10/28/2022
+# Runtime: 140 ms, faster than 37.61% of Python3 online submissions for Single Number II.
+# Memory Usage: 16 MB, less than 52.15% of Python3 online submissions for Single Number II.
+
+
+# === LeetCode 137. Single Number II | Medium  ========================
+# Given an integer array nums where every element appears three times except for 
+# one, which appears exactly once. Find the single element and return it.
+# 
+# You must implement a solution with a linear runtime complexity and use only constant extra space.
+# 
+# Example 1:
+# 
+# Input: nums = [2,2,3,2]
+# Output: 3
+# Example 2:
+# 
+# Input: nums = [0,1,0,1,0,1,99]
+# Output: 99
+#  
+# 
+# Constraints:
+# 
+# 1 <= nums.length <= 3 * 104
+# -2**31 <= nums[i] <= 2**31 - 1
+# Each element in nums appears exactly three times except for one element which appears once.
+# =============================================================================
+
+# Now what if every element appears three times except for one element that occurs once
+# use a dictionary with number of times the number has appeared so far
+# nums = [2,2,3,2] # for testing
+class Solution:
+    def singleNumber(self, nums: List[int]) -> int:
+        number_how_many_times = dict()
+        # keys: numbers in nums. values: how many times they appear
+        
+        for index in range(len(nums)):
+            
+        # if number has already been found at least once before
+            if nums[index] in number_how_many_times: 
+                number_how_many_times[nums[index]] += 1
+                
+            else: # found that number for the first time
+                number_how_many_times[nums[index]] = 1
+            
+        for key, value in number_how_many_times.items():
+            if value == 1:
+                return(key)
