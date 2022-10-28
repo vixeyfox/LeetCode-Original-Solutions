@@ -1,0 +1,38 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Oct 28 13:15:32 2022
+
+@author: vixey foxwish
+"""
+
+# LeetCode 136. Single Number (Easy) Solved 10/28/2022
+
+# Algorithm thoughts to prepare solution
+# use sets for improved efficiency over lists
+    # whatever didn't appear twice, but only once, is the answer
+    # every element appears twice except for one
+# so when an element appears the second time...
+    # remove it from set of possible answers
+    # this leaves behind one working answer at the very end
+
+# Using pop to get the one value from the possible answers set (adjusted from Discussions)
+
+# Runtime: 136 ms, faster than 95.52% of Python3 online submissions for Single Number.
+# Memory Usage: 17.1 MB, less than 9.95% of Python3 online submissions for Single Number.
+
+class Solution:
+    def singleNumber(self, nums: List[int]) -> int:
+        possible_answers = set()
+        for index in range(len(nums)): # 0, 1, ..., n-1 where n is len of nums
+            if nums[index] not in possible_answers:
+                possible_answers.add(nums[index])
+            else: # it already appeared once, this is its second time, so remove it
+                possible_answers.remove(nums[index])
+        true_answer = possible_answers.pop() # a simpler way to get the one element of a set
+        return true_answer
+
+# Previous working version (without help)
+# Runtime: 146 ms, faster than 88.44% of Python3 online submissions for Single Number.
+# Memory Usage: 17.2 MB, less than 5.22% of Python3 online submissions for Single Number.
+# with for loop to retrieve the one value from the possible answers set 
+# (for element in set), true_answer = element
