@@ -1,0 +1,115 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Nov 13 12:09:07 2022
+
+@author: vixey foxwish
+"""
+# LeetCode 20. Valid Parentheses (Easy)
+# Solved 11/13/2022
+# Runtime 34ms Beats 91.29%
+# Memory 13.9 MB Beats 72.20%
+
+# =============================================================================
+# Given a string s containing just the characters '(', ')', '{', '}', '[' and ']',
+#  determine if the input string is valid.
+# 
+# An input string is valid if:
+# 
+# Open brackets must be closed by the same type of brackets.
+# Open brackets must be closed in the correct order.
+# Every close bracket has a corresponding open bracket of the same type.
+#  
+# 
+# Example 1:
+# 
+# Input: s = "()"
+# Output: true
+# Example 2:
+# 
+# Input: s = "()[]{}"
+# Output: true
+# Example 3:
+# 
+# Input: s = "(]"
+# Output: false
+#  
+# 
+# Constraints:
+# 
+# 1 <= s.length <= 10**4
+# s consists of parentheses only '()[]{}'.
+# =============================================================================
+s = '()' # ([])
+
+class Solution:
+    def isValid(self, s: str) -> bool:
+        open_parentheses, open_curly, open_brackets = 0,0,0
+        
+# initialize variable storing how many have been opened and not yet closed
+    # for parentheses (), curly {}, and brackets []
+# for instance (){}[] will go 100, 000, 010, 000, 001, 000 as it goes along
+# and ({[]}) will go 100, 110, 111, 110, 100, 000 as it goes along
+# ending with 000 verifies that it obeyed the rules for brackets opening and closing
+# note that we must catch cases like ([)] that are disallowed (out of order)
+# this is done with most_recent_open, a list that gets popped (last item) for each closing operation
+        most_recent_open = []
+        
+        for character in s:
+            
+# if it is one of the three openers, adjust that variable up by 1
+            if character == '(':
+                open_parentheses += 1
+                most_recent_open.append('(')
+            if character == '{':
+                open_curly += 1
+                most_recent_open.append('{')
+            if character == '[':
+                open_brackets += 1
+                most_recent_open.append('[')
+# Now to check what to do if it is a closing character, get bools that tell
+# if there is an open one ready to be closed AND it's not acting out of order
+# the not acting out of order is managed via pop from the list of most recently opened characters
+            bool_parentheses = open_parentheses > 0
+            bool_curly = open_curly > 0 
+            bool_brackets = open_brackets > 0 
+           
+# Now be sure to return false when a closing character appears, but it was not opened before then
+            if character == ')' and open_parentheses == 0:
+                return False
+            if character == '}' and open_curly == 0:
+                return False
+            if character == ']' and open_brackets == 0:
+                return False
+        
+# if it is one of the three closers, adjust that variable down by 1
+# however there must be one of that kind already open AND another one can't be open 
+# the first condition is tracked via boolean variables above, the latter
+# condition is checked via pop from the list of which was most recently opened
+# Also if most_recent_open is an empty list, there are no open containers, improperly closing, return false
+            if character == ')' and bool_parentheses:
+                if len(most_recent_open) == 0:
+                    return False
+                else:
+                    if most_recent_open.pop() == '(':
+                        open_parentheses -= 1
+                        
+            if character == '}' and bool_curly:
+                if len(most_recent_open) == 0:
+                    return False
+                else:
+                    if most_recent_open.pop() == '{':
+                        open_curly -= 1
+                        
+            if character == ']' and bool_brackets:
+                if len(most_recent_open) == 0:
+                    return False
+                else:
+                    if most_recent_open.pop() == '[':
+                        open_brackets -= 1
+   
+   # print(open_parentheses, open_curly, open_brackets) # for troubleshooting
+# at the end, all variables should equal 0 if and only if they were all closed out evenly
+        if (open_parentheses, open_curly, open_brackets) == (0,0,0): # tuple
+            return True
+        else:
+            return False
