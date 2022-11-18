@@ -1,0 +1,61 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Nov 17 16:57:21 2022
+
+@author: vixey foxwish
+"""
+# LeetCode 125: Valid Palindrome (Easy)
+# convert all uppercase to lowercase
+# remove all non-alphanumeric characters
+# reads the same forward and backwards (return True or False)
+
+# Solved 11/17/2022
+# Runtime 79 ms Beats 70.78%
+# Memory 14.3 MB Beats 86.5%
+# =============================================================================
+# Troubleshooting test cases 
+# s = 'A man, a plan, a canal: Panama'  # True
+# s = '$ 1 Race Car 1#' # True
+# this gets converted to '1racecar1' thus establishing the code below (1,2) works
+# s = 'race a car' # False
+# s = 'f' # True
+# s = '' # True
+# =============================================================================
+class Solution:
+    def isPalindrome(self, s: str) -> bool:
+        # 1. convert all uppercase to lowercase
+        lowercase_s = s.lower()
+        
+        # 2. remove all non-alphanumeric characters
+        whitelist = 'abcdefghijklmnopqrstuvwxyz0123456789'
+        new_str = ''
+        for character in lowercase_s:
+            if character in whitelist:
+                new_str += character
+        
+        # 3. reads the same forward and backwards
+        about_half = len(new_str) // 2
+        # if a string has 9 characters, only need to confirm 0-3 (4 times) out of indices 0123 4 5678
+            # that characters at indices 0-3 are same as 8-5 because the final character can be any
+        # if a string has 8 characters, only need to confirm 0-3 (4 times) out of indices 0123 4567
+        
+        # Special case: the empty string is a valid palindrome, as is any 1 character
+        if len(new_str) <= 1:
+            return True
+        
+        for index in range(about_half):
+        # check 0,1,2,... from left and -1,-2,-3 from right
+        # since forward indices begin at 0 and backward indices start at -1
+            if new_str[index] == new_str[-index-1]:
+        # if it got to the end (about_half -1) of the range in the for loop
+        # then that means it is a palindrome as it never hit the "else" code before now
+                if index == about_half - 1:
+                    return True
+            # if not there yet, so far so good (if statement) so keep going then
+                else:
+                    continue
+                    
+            else:
+                # there was proof it was not a palindrome
+                # at one point the expected match (if statement) didn't hold true
+                return False
