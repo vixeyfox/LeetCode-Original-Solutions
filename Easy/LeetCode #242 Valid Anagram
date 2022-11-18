@@ -1,0 +1,33 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Nov 18 12:12:37 2022
+
+@author: vixey foxwish
+"""
+# LeetCode 242 Valid ANagram
+# given two strings s and t, return true if t is an anagram of s, false otherwise
+
+# Solved 11/18/2022
+# Runtime 49 ms Beats 94.49%
+# Memory 14.4 MB Beats 67.70%
+
+s = 'anagram'
+t = 'nagaram'
+
+class Solution:
+    def isAnagram(self, s: str, t: str) -> bool:
+# make dictionaries of keys:letters and values:frequencies
+        def frequency_dict (string_of_letters: str) -> dict:
+            """ Makes a dictionary where the keys are the letters and the values are 
+            the frequencies of how many times that letter appears in the string """
+            output_dict = dict()
+            for letter in string_of_letters:
+                # if it has already appeared, add 1 to frequency
+                if letter in output_dict:
+                    output_dict[letter] += 1
+                # else if it is a new letter for the first time, create frequency of 1
+                else:
+                    output_dict[letter] = 1
+            return output_dict
+        # if they are the same, return true
+        return frequency_dict(s) == frequency_dict(t)
