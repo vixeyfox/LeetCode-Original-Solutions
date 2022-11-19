@@ -1,0 +1,166 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Nov 19 10:34:46 2022
+
+@author: vixey foxwish
+"""
+# LeetCode 2221. Find Triangular Sum of an Array (Medium)
+# Solved 11/19/2022
+
+# TWO distinct solutions:
+    
+    # Brute Force Solution (solved first) 
+        # Runtime 8968ms Beats 5%
+        # Memory usage 14 MB Beats 77.41%
+        
+    # Upside Down Pascal's Triangle Solution (solved second)
+        # Runtime 3576 ms Beats 70.13%
+        # Memory Usage 66.8 MB Beats 5.18%
+
+# =============================================================================
+# You are given a 0-indexed integer array nums, where nums[i] is a digit between 0 and 9 (inclusive).
+# 
+# The triangular sum of nums is the value of the only element present in nums after the following process terminates:
+# 
+# Let nums comprise of n elements. If n == 1, end the process. Otherwise, create 
+# a new 0-indexed integer array newNums of length n - 1.
+# For each index i, where 0 <= i < n - 1, assign the value of newNums[i] as
+#  (nums[i] + nums[i+1]) % 10, where % denotes modulo operator.
+
+# Replace the array nums with newNums.
+# Repeat the entire process starting from step 1.
+# Return the triangular sum of nums.
+# =============================================================================
+
+# ===============================================================================
+
+# Brute Force Solution 
+# Runtime 8968ms Beats 5%
+# Memory usage 14 MB Beats 77.41%
+nums = [1,2,3,4,5]
+class Solution:
+    def triangularSum(self, nums: List[int]) -> int:
+        # Define a function drop_sum that sums two adjacent numbers takes mod 10 of result
+        def drop_sum(list_nums: list, start_index: int) -> int:
+            ''' This function works with an input list and an input start_index
+            It sums list_nums[start_index] and list_nums[start_index + 1] and takes
+            mod 10 of the result and returns that value'''
+            
+            in_progress_sum = list_nums[start_index] + list_nums[start_index + 1]
+            mod_10_sum = in_progress_sum % 10
+            return mod_10_sum
+        
+        # Defind a function that generates the new array newNums from a previous given row
+        def generate_next_row(list_nums: list) -> list:
+            ''' This function works with an input list and uses drop_sum to get the 
+            values of the new row (next array newNums) where adjacent numbers are summed
+            and the result mod 10 is used to populate each position in the next row.
+            Since the next row will have len(nums)-1 elements, need to use a range to 
+            generate indices 0, 1, ..., len(nums)-2 to call drop_sum repeatedly'''
+            
+            length_nums = len(nums)
+            next_row = []
+            # Build up the 0,1, ..., length_nums -2 values from a range and for loop
+            # use the drop_sum function to get the new value length_nums -1 times
+            for index in range(length_nums-1):
+                new_value = drop_sum(list_nums, index)
+                next_row.append(new_value)
+            # return the next row of newNums
+            return next_row
+        
+        # if len(nums) = 5 you do the operation 4 times (for loop) (range(len(nums)-1)) -> 0,1,2,3 integers
+        # the four operations take length of nums to 5->4->3->2->1 
+        # to get to the final one value that is the desired triangular sum
+        
+        length_nums = len(nums)
+        for integer in range(length_nums - 1):
+            # now for each integer in this counting range, generate next row newNums and then assign back to nums
+            newNums = generate_next_row(nums)
+            nums = newNums
+        # convert list of that one value into integer of that one value with int(nums[0])
+        return(int(nums[0]))
+# ===============================================================================
+
+# Upside Down Pascal's Triangle Solution
+# Runtime 9249 ms Beats 5%
+# Fixed using mod 10 after each addition instead of just at the end
+# Runtime 3576 ms Beats 70.13%
+# Memory Usage 66.8 MB Beats 5.18%
+
+# The question is... how many times does each member of the original array nums
+# get added into the final solution? We can add it together that many times
+# (different for each position, but symmetric left to right) and then take mod 10
+
+# 1 (just a number by itself)
+
+# 1 1
+#  1 (if original len(nums) = 2)
+
+# 1 2 1 
+#  1 1
+#   1
+
+# 1 3 3 1
+#  1 2 1
+#   1 1
+#    1
+
+# We can see recursively that this is an inverted Pascal's triangle
+# So now we need to generate Pascal's triangle, get the coefficients for how many
+# times each digit in nums is added in the final result, then take mod 10 of all that
+
+# Re-use Pascal Triangle Generator code from October 6, 2022
+
+
+# Pascal's Triangle Generator
+  #            1
+  #           1 1
+  #          1 2 1
+  #         1 3 3 1   # pre_row is len 4
+  #        1 4 6 4 1  # next_row must become len 5. needs len(pre_row) - 1 = 3 values inserted into [1,1]
+  #           ...
+
+  # First, it is necessary to make a function that can generate the next row of 
+  # Pascal's triangle given any preceding row. This next_row will have 1 on its
+  # ends in any case, so it can start as [1,1]. The input is pre_row, the 
+  # preceding row
+
+  # make a function that generates the next row, given the previous row
+class Solution:
+    def triangularSum(self, nums: List[int]) -> int:
+        def next_pascal_row(pre_row: list) -> list:
+            next_row = [1]*(len(pre_row) + 1)             
+            # For loop iterates through preceding row to build the next row's middle values
+            for index in (range(len(pre_row)-1)):   
+                # there will be len(pre_row)-1 summation operations to perform
+                drop_sum = pre_row[index] + pre_row[index + 1]
+                # sum two values of preceding row 
+                next_row[index + 1] = drop_sum           
+                # insert the sum into the next row to build the next row
+            return next_row
+        
+        # make a function that generates Pascal's triangle in a for loop using this function
+        
+        def pascal_generator(row_count: int) -> list: 
+            # Produces Pascal's Triangle, row_count rows, as list of lists
+            row_count -= 1                            
+            # the number of rows below [1] that remain to be built
+            pascal_list = [[1]]                      
+            # start with the topmost row of Pascal's triangle
+            build_next = next_pascal_row(pascal_list[-1]) 
+            # build the next row after the most recent one generated
+            for row_number in range(row_count):           
+                # for loop to build out the following rows, appending each in turn
+                build_next = next_pascal_row(pascal_list[-1])
+                #relies on the most recent row that already exists
+                pascal_list.append(build_next)               
+                # adds this one into the complete build (end of for loop body)
+        
+            return pascal_list
+        # nums = [1,2,3,4,5]
+        length_nums = len(nums)
+        row_of_coefficients = pascal_generator(length_nums)[-1]
+        triangular_sum = 0
+        for index in range(length_nums):
+            triangular_sum += row_of_coefficients[index] * nums[index] % 10
+        return triangular_sum % 10
