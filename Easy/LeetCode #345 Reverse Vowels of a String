@@ -1,0 +1,73 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Nov 23 16:45:37 2022
+
+@author: vixey foxwish
+"""
+
+# LeetCode 345 Reverse Vowels of a String
+# Solved 11/23/2022
+# Runtime 138 ms Beats 34.94%
+# Memory Usage 14.6 MB Beats 97.23%
+
+# =============================================================================
+# Given a string s, reverse only all the vowels in the string and return it.
+# 
+# The vowels are 'a', 'e', 'i', 'o', and 'u', and they can appear in both lower and upper cases, more than once.
+# 
+# Example 1:
+# 
+# Input: s = "hello"
+# Output: "holle"
+# Example 2:
+# 
+# Input: s = "leetcode"
+# Output: "leotcede"
+#  
+# 
+# Constraints:
+# 
+# 1 <= s.length <= 3 * 10**5
+# s consist of printable ASCII characters.
+# =============================================================================
+
+# = testing =====================================================================
+# s = 'a a' 
+# s = 'leetcode'
+# s = 'hello'
+# =============================================================================
+
+class Solution:
+    def reverseVowels(self, s: str) -> str:
+# Manage the vowels as a stack, modifying this only with append (to the end) and pop (from the end)
+        vowel_stack = []
+# Make a whitelist of all 10 characters to be recognized as vowels
+        vowel_string = 'aeiouAEIOU'
+# if there are no vowels, looks like we don't need changes, so return the original input (saves time)
+        looks_bad = 0
+        for vowel in vowel_string:
+            if vowel not in s:
+                looks_bad += 1
+        if looks_bad == 10:
+            return s
+# if it gets down to here, there must be at least one vowel, so below code will work
+        for index in range(len(s)):
+# iterate through s, if the character at any index in s is a vowel, append to vowel stack
+            if s[index] in vowel_string:
+                vowel_stack.append(s[index])
+# now we build a new string from s, same as before, unless there's a vowel,
+# in which case we note that we want to pop the vowel from the stack and put that in instead
+        answer = ''
+        for index in range(len(s)):
+# if character is not a vowel, no change needed, answer same as input
+            if s[index] not in vowel_string:
+                answer += s[index]
+# otherwise is character IS a vowel, then pop the last vowel from the vowel stack array list
+            else:
+                answer += vowel_stack.pop()
+        return answer
+
+
+        
+        
+        
