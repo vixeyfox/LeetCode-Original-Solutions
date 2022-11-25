@@ -1,0 +1,99 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Nov 25 10:35:22 2022
+
+@author: vixey foxwish
+"""
+# LeetCode 451. Sort Characters by Frequency (Medium)
+# Solved 11/25/2022
+# Runtime 160 ms Beats 14.53%
+# Memory 15.2 MB Beats 80.97%
+
+# sort it in decreasing order based on the frequency of the characters
+
+# =============================================================================
+# Given a string s, sort it in decreasing order based on the frequency of the characters.
+# The frequency of a character is the number of times it appears in the string.
+# Return the sorted string. If there are multiple answers, return any of them.
+# 
+# Example 1:
+# 
+# Input: s = "tree"
+# Output: "eert"
+# Explanation: 'e' appears twice while 'r' and 't' both appear once.
+# So 'e' must appear before both 'r' and 't'. Therefore "eetr" is also a valid answer.
+# Example 2:
+# 
+# Input: s = "cccaaa"
+# Output: "aaaccc"
+# Explanation: Both 'c' and 'a' appear three times, so both "cccaaa" and "aaaccc" are valid answers.
+# Note that "cacaca" is incorrect, as the same characters must be together.
+# Example 3:
+# 
+# Input: s = "Aabb"
+# Output: "bbAa"
+# Explanation: "bbaA" is also a valid answer, but "Aabb" is incorrect.
+# Note that 'A' and 'a' are treated as two different characters.
+#  
+# 
+# Constraints:
+# 
+# 1 <= s.length <= 5 * 10**5
+# s consists of uppercase and lowercase English letters and digits.
+# s = 'cccaaabbeefghdddd' (test)
+# yields ddddcccaaabbeefgh as it should
+# =============================================================================
+class Solution:
+    def frequencySort(self, s: str) -> str:
+# First, make a dictionary where keys = characters and values = frequencies
+        char_frequency = dict()
+        for character in s:
+            if character in char_frequency.keys():
+                # has been seen before, so add 1 to count
+                char_frequency[character] += 1
+            else:
+                # seen for the first time, add to dict
+                char_frequency[character] = 1
+        
+        # Then make a set of the frequencies
+        frequency_set = set(char_frequency.values())
+# we only want to deal with each distinct frequency value ONCE, so use a set
+# (otherwise would get tree -> eetrtr from hitting freq_1 * freq_1_letters twice)
+        
+# now that duplicated are handled, we want a list from highest to lowest
+        frequency_list = list(frequency_set)
+# Sort the list of frequencies from highest to lowest
+        ascending_freq_list = sorted(frequency_list)
+# (regular sort then reverse the list)
+        freq_hi_to_low = ascending_freq_list[::-1]
+        
+# make a dictionary that has keys (frequencies) and values (characters with that frequency)
+        frequency_char = dict()
+        for key, value in char_frequency.items():
+# already seen that frequency, add another character that shares that frequency to a list
+            if value in frequency_char.keys():
+                frequency_char[value].append(key)
+# have never seen that frequency before, record what character has that frequency
+            else:
+                frequency_char[value] = [key]
+                
+# prepare to build up the answer as a string
+        answer = ''
+        
+# Now go through the list of unique frequencies, for each one, get a list of characters with that frequency   
+        for freq_descending in freq_hi_to_low:
+# for that given frequency (going in descending order), find the chars with that frequency
+            for frequency in frequency_char.keys():
+                if frequency == freq_descending:
+# get all characters (for loop thru list) with that frequency (may have ties btw diff chars), always a list
+                    for char_with_that_freq in frequency_char[frequency]:
+# make a block of that character with the given frequency, repeated the right frequency number of times
+                        block = char_with_that_freq * frequency
+# add a letter from that set, (the frequency = number of times), to build up the answer
+                        answer += block
+# now go through the rest of the descending frequencies
+    # add each letter * its frequency (# of times) to answer
+# that's what the "for freq_descending in freq_hi_to_low" does for subsequent runs of the outermost for loop 
+        
+    # return answer
+        return answer
