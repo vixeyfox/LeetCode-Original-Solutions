@@ -39,7 +39,7 @@ class Solution:
             if nums[position] not in frequency_dict: # if the number has not been seen yet
                 frequency_dict[nums[position]] = 1 # now it has been seen once
             else: # number has already been seen and is in frequency_dict
-                frequency_dict[nums[position]] += 1 # not it has been seen one more time
+                frequency_dict[nums[position]] += 1 # now it has been seen one more time
         
         list_of_frequencies = sorted(frequency_dict.values()) # sort the frequencies (ascending)
         most_common_first = list_of_frequencies[::-1] # reverse this list of frequencies (descending)
