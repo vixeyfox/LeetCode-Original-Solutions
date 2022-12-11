@@ -1,0 +1,52 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Dec 11 12:28:00 2022
+
+@author: vixey foxwish
+"""
+
+# Solved 12/11/2022
+# Runtime 41 ms Beats 83%
+# Memory Usage 13.8 MB Beats 58.50%
+
+# =============================================================================
+# 
+# 1134. Armstrong Number
+# 
+# Given an integer n, return true if and only if it is an Armstrong number.
+# 
+# The k-digit number n is an Armstrong number if and only if the kth power of each digit sums to n.
+# 
+# Example 1:
+# 
+# Input: n = 153
+# Output: true
+# Explanation: 153 is a 3-digit number, and 153 = 13 + 53 + 33.
+# Example 2:
+# 
+# Input: n = 123
+# Output: false
+# Explanation: 123 is a 3-digit number, and 123 != 13 + 23 + 33 = 36.
+#  
+# 
+# Constraints:
+# 
+# 1 <= n <= 10**8
+# =============================================================================
+n = 153
+
+class Solution:
+    def isArmstrong(self, n: int) -> bool:
+        
+        sum_of_kth_powers = 0
+        
+        # get the length of the string form of integer n to know how many digits it has
+        k = len(str(n))
+        
+        # iterate through the digits of string form of integer n
+        for digit in str(n):
+            
+            # raise each integer digit to the kth power and sum them
+            sum_of_kth_powers += int(digit)**k
+        
+        return sum_of_kth_powers == n
