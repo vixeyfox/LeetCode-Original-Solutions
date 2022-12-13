@@ -1,0 +1,74 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Dec 13 14:13:39 2022
+
+@author: vixey foxwish
+"""
+# =============================================================================
+# 771. Jewels and Stones
+
+# Solved 12/13/2022
+# First Solution
+# Runtime 33 ms Beats 92.43%
+# Memory 13.9 MB Beats 59.64%
+# 
+# You're given strings jewels representing the types of stones that are jewels,
+# and stones representing the stones you have. Each character in stones is a type 
+# of stone you have. You want to know how many of the stones you have are also jewels.
+# 
+# Letters are case sensitive, so "a" is considered a different type of stone from "A".
+# 
+# Example 1:
+# 
+# Input: jewels = "aA", stones = "aAAbbbb"
+# Output: 3
+# Example 2:
+# 
+# Input: jewels = "z", stones = "ZZ"
+# Output: 0
+#  
+# Constraints:
+# 
+# 1 <= jewels.length, stones.length <= 50
+# jewels and stones consist of only English letters.
+# All the characters of jewels are unique.
+# =============================================================================
+
+# =============================================================================
+# jewels = "aAB"
+# stones = "aAAbbbBBb"
+# test yields 5 as it should
+# jewels = 'z'
+# stones = 'ZZ'
+# test yields 0 as it should
+# =============================================================================
+# First solution
+class Solution:
+    def numJewelsInStones(self, jewels: str, stones: str) -> int:
+        # Initialize the integer variable jewel count at 0
+        jewel_count = 0
+        # Iterate through the characters of stones with a for loop
+        for stone in stones:
+            # if the character in stones is a jewel, add 1 to jewel count
+            # all the characters in jewels are unique
+            if stone in jewels:
+                jewel_count += 1
+        # at the end of going through all the stones
+            # return the toal jewel count
+        return jewel_count
+
+# print(jewel_count, 'is the jewel count') # code for testing
+
+# Second solution... make Jewels a set instead of a string
+# Runs more slowly actually, 60 ms beats 40.87%, memory usage unchanged
+jewel_set = set(jewels)
+jewel_count = 0
+# Iterate through the characters of stones with a for loop
+for stone in stones:
+    # if the character in stones is a jewel, add 1 to jewel count
+    # all the characters in jewels are unique
+    if stone in jewel_set:
+        jewel_count += 1
+# at the end of going through all the stones
+    # return the toal jewel count
+return jewel_count
