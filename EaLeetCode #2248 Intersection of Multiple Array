@@ -1,0 +1,61 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Dec 14 20:11:22 2022
+
+@author: vixey foxwish
+"""
+
+# Solved 12/14/2022
+# Best (first) solution
+# Runtime 147 ms Beats 56.88%
+# Memory Usage 14.2 MB Beats 93.71%
+# 
+# =============================================================================
+# 
+# 2248. Intersection of Multiple Arrays
+# 
+# Given a 2D integer array nums where nums[i] is a non-empty array of distinct 
+# positive integers, return the list of integers that are present in each array 
+# of nums sorted in ascending order.
+#  
+# 
+# Example 1:
+# 
+# Input: nums = [[3,1,2,4,5],[1,2,3,4],[3,4,5,6]]
+# Output: [3,4]
+# Explanation: 
+# The only integers present in each of nums[0] = [3,1,2,4,5], nums[1] = [1,2,3,4], and nums[2] = [3,4,5,6] are 3 and 4, so we return [3,4].
+# Example 2:
+# 
+# Input: nums = [[1,2,3],[4,5,6]]
+# Output: []
+# Explanation: 
+# There does not exist any integer present both in nums[0] and nums[1], so we return an empty list [].
+#  
+# 
+# Constraints:
+# 
+# 1 <= nums.length <= 1000
+# 1 <= sum(nums[i].length) <= 1000
+# 1 <= nums[i][j] <= 1000
+# All the values of nums[i] are unique.
+# =============================================================================
+class Solution:
+    def intersection(self, nums: List[List[int]]) -> List[int]:
+        wip_set = set()
+# a work in progress "WIP" set of numbers found in each array
+        for index in range(len(nums)):
+            for inner in range(len(nums[index])):
+            # get set of the numbers in the inner array
+                this_list = nums[index]
+                this_set = set(this_list)
+# ^ Combining the two above lines into one line slowed it down slightly and used a lot more memory
+                if index == 0:
+                    wip_set = this_set
+                else:
+    # the new work in progress set is numbers found in all previous arrays
+    # intersecting & with the numbers found in this set
+                    wip_set = wip_set & this_set
+# now get a sorted list of the final set of numbers in all arrays within nums
+        final_list = sorted(list(wip_set))
+        return final_list
