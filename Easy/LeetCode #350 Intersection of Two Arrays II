@@ -1,0 +1,83 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Dec 16 12:05:06 2022
+
+@author: vixey foxwish
+"""
+# Solved 12/16/2022
+# Runtime 61 ms Beats 81.67%
+# Memory 14.2 MB Beats 16.79%
+# =============================================================================
+# 
+# 350. Intersection of Two Arrays II
+# 
+# Given two integer arrays nums1 and nums2, return an array of their intersection.
+# Each element in the result must appear as many times as it shows in both arrays 
+# and you may return the result in any order.
+# 
+#  
+# 
+# Example 1:
+# 
+# Input: nums1 = [1,2,2,1], nums2 = [2,2]
+# Output: [2,2]
+# Example 2:
+# 
+# Input: nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+# Output: [4,9]
+# Explanation: [9,4] is also accepted.
+#  
+# 
+# Constraints:
+# 
+# 1 <= nums1.length, nums2.length <= 1000
+# 0 <= nums1[i], nums2[i] <= 1000
+#  
+# 
+# Follow up:
+# 
+# What if the given array is already sorted? How would you optimize your algorithm?
+# What if nums1's size is small compared to nums2's size? Which algorithm is better?
+# What if elements of nums2 are stored on disk, and the memory is limited such that you cannot load all elements into the memory at once?
+# =============================================================================
+nums1 = [1,2,2,1]
+nums2 = [2,2]
+class Solution:
+    def intersect(self, nums1: List[int], nums2: List[int]) -> List[int]:
+        # Build a frequency dictionary of how often each number appears
+        freq_dict_1 = dict()
+        for key in nums1:
+            if key in freq_dict_1.keys():
+                freq_dict_1[key] += 1
+            else:
+                freq_dict_1[key] = 1
+        freq_dict_2 = dict()
+        for key in nums2:
+            if key in freq_dict_2.keys():
+                freq_dict_2[key] += 1
+            else:
+                freq_dict_2[key] = 1
+        # keys: numbers, values: how mnay times it appears in its array
+        set_of_keys_1 = set(freq_dict_1.keys())
+        set_of_keys_2 = set(freq_dict_2.keys())
+        # Make a set of the keys in each array, get the intersection
+        found_in_both = set_of_keys_1 & set_of_keys_2
+        
+        # For each key found in both arrays, get the min() of the two frequencies
+        answer_dict = dict()
+        for key_in_both in found_in_both:
+            # the numbers that show up in both arrays
+            times_in_1 = freq_dict_1[key_in_both]
+            times_in_2 = freq_dict_2[key_in_both]
+        # when you hit the key/number found in both arrays, see how many times it at least appears
+            val_in_both = min(times_in_1, times_in_2)
+            answer_dict[key_in_both] = val_in_both
+            # new dictionary storing how many times each number appears in both arrays
+        # build up the answer
+        answer = []
+        for key, value in answer_dict.items():
+            for each_time in range(value):
+        # add the number in as many times as it is found in both arrays i.e. (range(2)) is 0,1 so twice
+                answer.append(key)
+        return answer
+                
