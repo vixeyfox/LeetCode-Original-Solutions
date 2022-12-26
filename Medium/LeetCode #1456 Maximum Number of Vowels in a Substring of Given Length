@@ -4,6 +4,9 @@ Created on Mon Dec 26 10:06:38 2022
 
 @author: vixey foxwish
 """
+# Solved 12/26/2022
+# Runtime 131 ms Beats 98.44%
+# Memory 14.8 MB Beats 78.68%
 # =============================================================================
 # 
 # 1456. Maximum Number of Vowels in a Substring of Given Length
