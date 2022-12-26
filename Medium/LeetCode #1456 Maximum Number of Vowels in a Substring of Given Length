@@ -1,0 +1,133 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Dec 26 10:06:38 2022
+
+@author: vixey foxwish
+"""
+# =============================================================================
+# 
+# 1456. Maximum Number of Vowels in a Substring of Given Length
+# Medium
+# 
+# Given a string s and an integer k, return the maximum number of vowel letters in any substring of s with length k.
+# Vowel letters in English are 'a', 'e', 'i', 'o', and 'u'.
+# 
+# Example 1:
+# Input: s = "abciiidef", k = 3
+# Output: 3
+# Explanation: The substring "iii" contains 3 vowel letters.
+# 
+# Example 2:
+# Input: s = "aeiou", k = 2
+# Output: 2
+# Explanation: Any substring of length 2 contains 2 vowels.
+# 
+# Example 3:
+# Input: s = "leetcode", k = 3
+# Output: 2
+# Explanation: "lee", "eet" and "ode" contain 2 vowels.
+#  
+# Constraints:
+# 1 <= s.length <= 10**5
+# s consists of lowercase English letters.
+# 1 <= k <= s.length
+# =============================================================================
+
+# Find out how many substrings of length k are in the string s with equal or longer length
+# if k = len(s), there is 1 (all of it)
+# if k = 2, len(s) = 5 
+# 01234 are the indices
+# 01, 12, 23, 34  -> total of 4
+# if k = 3, len(s) = 7
+# 0123456 are the indices
+# 012, 123, 234, 345, 456 -> total of 5
+# s minus k plus 1 is the general rule here
+
+# now iterate through every substring of length k that can be found in s
+# [0:k], [1:k+1], ... [s-k:s]
+# now for each one of those, count how many vowels
+# start with 0 as best_so_far value
+# if the vowel count exceeds best_so_far, make that new value best_so_far
+
+# How to improve speed over brute force approach?
+# what to do if the number of letters_remaining is less than the gap between
+# the number of vowels already seen AND the best_so_far? if so, skip to next 
+
+s = 'ldsjiofgahirwguiohawsidoghaoighoiafgjdlfkgjsfdlkg'
+k = 8
+
+vowels = set(['a','e','i','o','u'])
+# ========= Brute Force that works but is too slow ============================
+# best_so_far = 0
+# number_of_substrings = len(s) - k + 1
+# for substring in range(number_of_substrings):
+#     # it counts up the substrings by their starting index value in s
+#     this_substring = s[substring:substring+k]
+#     # each substring is length k, the slice beginning with that index 
+#     # called substring, of length k
+#     vowels_so_far = 0
+#     letters_remaining = k
+#     # initialize these variables anew for each substring so it starts fresh
+#     for character in this_substring:
+#         # it checks if this substring could possibly set a new record if ideal
+#         if letters_remaining + vowels_so_far > best_so_far:
+#             if character in vowels:
+#                 # count it if it is a vowel, using a set so it's fast
+#                 vowels_so_far += 1
+#             # now note that there is one less letter remaining
+#             letters_remaining -= 1
+#         else:
+#             # if this substring could not possibly set a new record with all 
+#             # its remaining characters turning out to be vowels, then break 
+#             # out of this substring's for loop so you can get to the next substring
+#             break 
+#     # gets down to here when it's done iterating through that substring's for loop
+#     letters_remaining = k
+#     if vowels_so_far > best_so_far:
+#         # set a new record if a newer high score was found 
+#         best_so_far = vowels_so_far
+# return best_so_far
+# # print(best_so_far)  
+#=======================================================================
+# Try again with LeetCode Hints
+# Keep a window of size k and maintain the number of vowels in it
+# Keep moving the window and update the number of vowels while moving. 
+# Answer is max number of vowels of any window.
+
+s = 'abciiidef'
+k = 3
+class Solution:
+    def maxVowels(self, s: str, k: int) -> int:
+        vowels = set(['a','e','i','o','u'])
+        number_of_windows = len(s) - k + 1
+        # Get the number of vowels in the first window
+        current_vowels = 0
+        best_so_far = 0
+        for index in range(k):
+            if s[index] in vowels:
+                current_vowels += 1
+        window_start = 0
+        window_end = k
+        best_so_far = current_vowels
+        # Now start shifting the window so the starting index is now "move_it"
+        for move_it in range(1, len(s) - k +1):
+            window_start = move_it
+            # get the new starting index which is now nonzero
+            window_end = window_start + k
+            # get the new ending index of the slice for that new substring
+            previous_letter = s[window_start - 1]
+            # is no longer used
+            new_letter = s[window_end - 1]
+            # is newly used, but keep in mind [0:3] grabs just [0,1,2] etc.
+            if previous_letter in vowels:
+                # if it lost a vowel by moving forward
+                current_vowels -= 1
+            if new_letter in vowels:
+                # if it gained a vowel by moving forward
+                current_vowels += 1
+            # if the new current_vowels in the substring is a new record, record that
+            if current_vowels > best_so_far:
+                best_so_far = current_vowels
+        return best_so_far
+
+print(best_so_far)
