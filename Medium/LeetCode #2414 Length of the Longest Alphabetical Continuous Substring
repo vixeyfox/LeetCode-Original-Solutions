@@ -1,0 +1,88 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Dec 29 10:48:13 2022
+
+@author: vixey foxwish
+"""
+# Solved 12/29/2022
+# =============================================================================
+# Runtime
+# 5633 ms
+# Beats
+# 5.22%
+
+# Memory
+# 14.9 MB
+# Beats
+# 95.23%
+# =============================================================================
+
+# =============================================================================
+# 2414. Length of the Longest Alphabetical Continuous Substring
+# Medium
+# 
+# An alphabetical continuous string is a string consisting of consecutive letters
+# in the alphabet. In other words, it is any substring of the string "abcdefghijklmnopqrstuvwxyz".
+# 
+# For example, "abc" is an alphabetical continuous string, while "acb" and "za" are not.
+# Given a string s consisting of lowercase letters only, return the length of 
+# the longest alphabetical continuous substring.
+# 
+# 
+# Example 1:
+# Input: s = "abacaba"
+# Output: 2
+# Explanation: There are 4 distinct continuous substrings: "a", "b", "c" and "ab".
+# "ab" is the longest continuous substring.
+# 
+# Example 2:
+# Input: s = "abcde"
+# Output: 5
+# Explanation: "abcde" is the longest continuous substring.
+#  
+# Constraints:
+# 
+# 1 <= s.length <= 10**5
+# s consists of only English lowercase letters.
+# =============================================================================
+
+s = "abacababcd"
+class Solution:
+    def longestContinuousSubstring(self, s: str) -> int:
+# We want to find the longest alphabetical continuous string
+# Any answer of length 5 "abcde" has every possible shorter string in it
+# So it is best to first check if the length 26 string is found in s
+# Then if not, scan all length 25 windows of s to see if they are in the master 26 character alphabetic string
+# Then if not, scan all length 24 windows of s... and repeat... as soon as an answer is found, return it
+# If no such strings of even length 2 are present, then the answer is surely 1 (any letter alone)
+length = len(s)
+        # the length of the string we are examining
+        alphabet = 'abcdefghijklmnopqrstuvwxyz'
+        # the largest window we may need to examine
+        max_window = min(length, 26)
+        # handle the special case where the answer is 26
+        if max_window >= 26:
+            if alphabet in s:
+                return 26
+# now we scan all length 25 windows within s to see if they are contained in alphabet
+# length - k + 1 is the number of substrings of length k that exist within s
+# then scan all length 24 windows, etc.
+# the longest window needing to be scanned is length 2, otherwise answer is 1
+        for k in range(25, 1, -1):
+            # range from 25, 24, ..., 2 inclusive
+            # Now scan every window of length k within s 
+            # and check if that window is contained in string alphabet
+            for move_it in range(0, length - k + 1):
+                # move window of length k from start to end of the string s
+                window_start = move_it
+                window_end = move_it + k
+                # slice of length k through s
+                this_window = s[window_start:window_end]
+                if this_window in alphabet:
+                    # if it's an alphabetical continuous string
+                    return k
+    # then we found the longest one, since we start at k = 25 and go down
+# if the code gets down to here, not even an alphabetical continuous string of k = 2 was found
+# so any letter by itself is considered an alphabetical continuous string of k = 1
+        return 1
+
