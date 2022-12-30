@@ -1,0 +1,99 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Dec 30 13:43:53 2022
+
+@author: vixey foxwish
+"""
+# Solved 12/30/2022
+# Runtime 42ms Beats 71.17%
+    # removed a shortcut from code and got 44ms, so kept it around
+# Memory 13.9 MB Beats 66.45%
+# This is my 100th LeetCode solved problem. 
+# Current stats as of this milestone:
+    # Easy: Solved 84/617 Beats 88.4%
+    # Medium: Solved 16/1341 Beats 52.1%
+    # Rank 574,038 (as of this AM, solved 1 M and 1 E so far today)
+# =============================================================================
+# 
+# 1945. Sum of Digits of String After Convert
+# You are given a string s consisting of lowercase English letters, and an integer k.
+# First, convert s into an integer by replacing each letter with its position in 
+# the alphabet (i.e., replace 'a' with 1, 'b' with 2, ..., 'z' with 26). Then, 
+# transform the integer by replacing it with the sum of its digits.
+#  Repeat the transform operation k times in total.
+# 
+# For example, if s = "zbax" and k = 2, then the resulting integer would be 8 by the following operations:
+# 
+# Convert: "zbax" ➝ "(26)(2)(1)(24)" ➝ "262124" ➝ 262124
+# Transform #1: 262124 ➝ 2 + 6 + 2 + 1 + 2 + 4 ➝ 17
+# Transform #2: 17 ➝ 1 + 7 ➝ 8
+# Return the resulting integer after performing the operations described above.
+# 
+# Example 1:
+# 
+# Input: s = "iiii", k = 1
+# Output: 36
+# Explanation: The operations are as follows:
+# - Convert: "iiii" ➝ "(9)(9)(9)(9)" ➝ "9999" ➝ 9999
+# - Transform #1: 9999 ➝ 9 + 9 + 9 + 9 ➝ 36
+# Thus the resulting integer is 36.
+# Example 2:
+# 
+# Input: s = "leetcode", k = 2
+# Output: 6
+# Explanation: The operations are as follows:
+# - Convert: "leetcode" ➝ "(12)(5)(5)(20)(3)(15)(4)(5)" ➝ "12552031545" ➝ 12552031545
+# - Transform #1: 12552031545 ➝ 1 + 2 + 5 + 5 + 2 + 0 + 3 + 1 + 5 + 4 + 5 ➝ 33
+# - Transform #2: 33 ➝ 3 + 3 ➝ 6
+# Thus the resulting integer is 6.
+# Example 3:
+# 
+# Input: s = "zbax", k = 2
+# Output: 8
+# =============================================================================
+# Constraints:
+# 1 <= s.length <= 100
+# 1 <= k <= 10
+# s consists of lowercase English letters.
+# =============================================================================
+# =============================================================================
+s = 'zbax'
+k = 2
+class Solution:
+    def getLucky(self, s: str, k: int) -> int:
+        # Make a dictionary where keys = letters and values = integers
+        alphabet = 'abcdefghijklmnopqrstuvwxyz'
+        alphabet_dict = dict()
+        counter = 1
+        # counter starts from 1 so a gets 1, b gets 2, etc.
+        for letter in alphabet:
+            alphabet_dict[letter] = counter
+            counter += 1
+        # now run the first conversion of the string since k >= 1
+        new_string = ''
+        for letter in s:
+            # add the string form of the numbers encoded by each letter in the alpahbet
+            new_string += str(alphabet_dict[letter])
+        # if k = 1 the following procedure runs once
+        # if k = 2 the following procedure runs twice   
+        # so use range(k) as needed to run through it that many times
+        for integer in range(k):
+            digit_sum = 0
+            # starts a new sum for each time the outer for loop runs
+            for digit in new_string:
+                # convert digit from str to int
+                digit_sum += int(digit)
+                # add to digit_sum
+                
+        # with this shortcut checker, runtime 42 ms
+        # without it, runtime 44ms (slower)        
+            if k - integer > 1:
+        # only useful when k > 1
+        # and there are still more rounds to go
+        # shaves 2 ms off of runtime
+                new_string = str(digit_sum)
+        return digit_sum
+        
+        #print(digit_sum)
+    
+    
