@@ -1,0 +1,148 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Dec 30 10:32:42 2022
+
+@author: vixey foxwish
+"""
+# Solved 12/30/2022
+# Runtime 125 ms Beats 49.50%
+# Memory Usage 14.7 MB Beats 64.55%
+
+
+# =============================================================================
+# 1513. Number of Substrings With Only 1s
+# Medium
+# Given a binary string s, return the number of substrings with all characters 1's. 
+# Since the answer may be too large, return it modulo 10**9 + 7. 
+# 
+# Example 1: 
+# Input: s = "0110111"
+# Output: 9
+# Explanation: There are 9 substring in total with only 1's characters.
+# "1" -> 5 times.
+# "11" -> 3 times.
+# "111" -> 1 time.
+
+# Example 2:
+# Input: s = "101"
+# Output: 2
+# Explanation: Substring "1" is shown 2 times in s.
+
+# Example 3:
+# Input: s = "111111"
+# Output: 21
+# Explanation: Each substring contains only 1's characters.
+#  
+# Constraints:
+# 1 <= s.length <= 10**5
+# s[i] is either '0' or '1'.
+# 
+# Hint
+# (1/1)
+# Count number of 1s in each consecutive-1 group. For a group with n consecutive 
+# 1s, the total contribution of it to the final answer is (n + 1) * n // 2.
+# =============================================================================
+
+# Go through the string s with a for loop
+    # if it starts with 1, count up the 1s for each new 1
+    # record and log the end of the 1 string when it is reached (the 0 is found)
+        # special case if it ends with a 1 handled at the end
+    # if it starts with 0, keep going till you hit a 1
+    # if you get to the end and the end is a 1, log that onto the preceding 1s
+        # handled as special case at the very end
+
+# =============================================================================
+# s = "0110111" # gives 9 as it should
+# s = "101" # gives 2 as it should
+# s = "111111" # gives 21 as it should
+# s = '11111101' # gives 22 as it should
+# s = '111111011' # gives 24 as it should
+# =============================================================================
+
+class Solution:
+    def numSub(self, s: str) -> int:
+        
+        # this records how many 1s are in the current streak of 1s
+        these_1s = 0
+        
+        # record if you are currently in a streak of consecutive 1s
+        in_these_1s = False
+        
+        # record the total sum of all substrings consisting of only 1s
+        answer_sum = 0
+        
+        for index in range(len(s)):
+            
+            if index > 0:
+            # handle all digits after the starting digit separately than the first
+                
+            # there are four possibilities as follows:
+                
+            # if you were not in a streak of 1s (previous was a 0)
+                # and get another 0
+                # and get a new 1
+        
+            # if you were in a streak of 1s (previous was a 1)
+                # and it ends with a 0
+                # and keep going with another 1
+                
+                    
+                # if you were not in a streak of 1s
+                if not in_these_1s:
+                    # and get another 0, then keep going
+                    if s[index] == '0':
+                        continue
+                    # and get a new 1
+                    elif s[index] == '1':
+                        these_1s = 1
+                        in_these_1s = True
+                
+                # if you were in a streak of 1s
+                elif in_these_1s:
+                    # and it ends with a 0
+                    if s[index] == '0':
+        # the length of the current streak of 1s is counted via these_1s
+        # we know there are (n + 1) * n // 2 substrings of those 1s that are all 1s
+            # sum of the first n numbers formula corresponds to
+            # how many substrings of all 1s in n consecutive 1s (sliding windows)
+            # there are n of length 1, n-1 of length 2, n-2 of length 3, ...
+                        how_many_substrings_of_1s = (these_1s + 1) * (these_1s) // 2
+                        answer_sum += how_many_substrings_of_1s
+                                
+                        # use modulo to prevent overflow
+                        answer_sum = answer_sum % (10**9 + 7)
+                        
+                        # reset the counters for how many 1s in a streak of 1s
+                        these_1s = 0
+                        in_these_1s = False
+                        
+                    elif s[index] == '1':
+                    # keep going through the streak of 1s and note it got longer
+                        these_1s += 1
+             
+             # handle the ending position being 1 as ending the streak of 1s as a special case
+                if index == len(s) - 1 and s[index] == '1' and in_these_1s:    
+                   # if it ends with a 1, need to total up that streak at its end
+                   how_many_substrings_of_1s = (these_1s + 1) * (these_1s) // 2
+                   answer_sum += how_many_substrings_of_1s
+                   
+                   # use modulo to prevent overflow
+                   answer_sum = answer_sum % (10**9 + 7)
+        
+                # if it ends with a zero, already handled with the main code above
+                # did not change the answer_sum upward by definition
+                    
+            # handle the starting position separately
+            # at the end to save time so code above runs first usually
+            elif index == 0:
+                # if you start with a 1, log that to a string of these_1s
+                if s[index] == '1':
+                    these_1s += 1
+                    in_these_1s = True
+                    
+                # if you start with a 0, just continue as before
+                if s[index] == '0':
+                    continue
+        return answer_sum  
+        #print(answer_sum)     
+    
