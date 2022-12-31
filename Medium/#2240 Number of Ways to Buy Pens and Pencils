@@ -1,0 +1,148 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Dec 31 14:29:23 2022
+
+@author: vixey foxwish
+"""
+# Solved 12/31/2022
+# Runtime 495 ms Beats 96.79%
+# Memory 14 MB Beats 6.2%
+
+# =============================================================================
+# 2240. Number of Ways to Buy Pens and Pencils
+# Medium
+# 
+# You are given an integer total indicating the amount of money you have. You are 
+# also given two integers cost1 and cost2 indicating the price of a pen and pencil 
+# respectively. You can spend part or all of your money to buy multiple quantities
+# (or none) of each kind of writing utensil.
+# 
+# Return the number of distinct ways you can buy some number of pens and pencils.
+# 
+# Example 1:
+# 
+# Input: total = 20, cost1 = 10, cost2 = 5
+# Output: 9
+# Explanation: The price of a pen is 10 and the price of a pencil is 5.
+# - If you buy 0 pens, you can buy 0, 1, 2, 3, or 4 pencils.
+# - If you buy 1 pen, you can buy 0, 1, or 2 pencils.
+# - If you buy 2 pens, you cannot buy any pencils.
+# The total number of ways to buy pens and pencils is 5 + 3 + 1 = 9.
+# 
+# Example 2:
+# 
+# Input: total = 5, cost1 = 10, cost2 = 10
+# Output: 1
+# Explanation: The price of both pens and pencils are 10, which cost more than total,
+# so you cannot buy any writing utensils. Therefore, there is only 1 way: buy 0 pens and 0 pencils.
+#  
+# 
+# Constraints:
+# 
+# 1 <= total, cost1, cost2 <= 10**6
+# =============================================================================
+total = 10
+cost1 = 3
+cost2 = 1
+
+class Solution:
+    def waysToBuyPensPencils(self, total: int, cost1: int, cost2: int) -> int:
+        # if both costs equal total it is much more quick to solve
+        if cost1 == cost2 == total:
+            # can buy neither, 1 pen, or 1 pencil
+            return 3
+        
+        # what if 1 cost equals total? then buy 0 or 1 of that item, then floor division
+        if cost1 == total:
+            buy_neither = 1
+            buy_only_pen = 1
+            buy_only_pencils = total // cost2
+            final_ans = buy_neither + buy_only_pen + buy_only_pencils
+            return final_ans
+        
+        # likewise the inverse
+        if cost2 == total:
+            buy_neither = 1
+            buy_only_pencil = 1
+            buy_only_pens = total // cost1
+            final_ans = buy_neither + buy_only_pens + buy_only_pencil
+            return final_ans
+        
+        # There are four possible cases where costs don't equal total:
+            # cost1, cost2 > total : cannot afford either, so 0 of both, total of 1 way
+            # cost1 > total > cost2: can only afford to buy some pencil(s)
+            # cost2 > total > cost1: can only afford to buy some pen(s)
+            # total > cost1, cost2: can afford to buy at least either of them some of the time
+            
+        # the first case (cannot buy pen nor pencil)
+        if cost1 > total and cost2 > total:
+            buy_neither = 1
+            return buy_neither
+            
+        # the second case: cannot buy pen; may only buy some or no pencil(s)
+        if cost1 > total > cost2:
+            # there will always be 0 pens bought, but pencils can be 0 or positive number of pencils
+            # for example if total = 20 and cost2 = 5, 20 // 5 = 4 and 0 pens 0 pencils is valid so
+            # then there are 1 + total // cost2 possible ways
+            buy_neither = 1
+            buy_pencils_only = total // cost2
+            return buy_neither + buy_pencils_only
+            
+        # the third case: cannot buy pencil; may only buy some or no pen(s)
+        if cost2 > total > cost1:
+            # there will always be 0 pencils bought, but pens can be 0 or positive number of pens
+            # for exmaple if total = 10 and cost1 = 3, 10 // 3 = 3 and 0 pens 0 pencils is valid so
+            buy_neither = 1
+            buy_pens_only = total // cost1
+            return buy_neither + buy_pens_only
+            
+        # the fourth case: can buy either pens or pencils in varying combinations
+        if total > cost1 and total > cost2:
+            # trivial case is still valid, could still buy 0 of both
+            buy_neither = 1
+            # now we iterate through the number of pens (cost1) and pencils (cost2)
+            # the max number of pens is bought when 0 pencils are bought
+            max_pens = total // cost1
+            # the max number of pencils is bought when 0 pens are bought
+            max_pencils = total // cost2
+            # we now look at how many ways there are to buy only type of item
+            buy_pens_only = max_pens
+            # 1, 2, 3, ..., max_pens is the number of ways to buy at least 1 pen and 0 pencils
+            buy_pencils_only = max_pencils 
+            # 1, 2, 3, ..., max_pencils is the number of ways to buy at least 1 pencil and 0 pens
+            # now we look at ways to buy BOTH together (requires sum <= total)
+            if cost1 + cost2 > total:
+                # then we already considered all possible ways, since can't ever get both
+                final_ans = buy_neither + buy_pens_only + buy_pencils_only
+                return final_ans
+                # print(final_ans)
+            else:
+            # the we know it's possible to have at least 1 way to buy both kinds of items
+                ways_to_buy_both = 0
+            # only consider ways that are not previously covered 
+            # we still need to include max_pens since total = 10, cost1 = 3, cost2 = 1
+            # shows there's still a new way to buy both even if it uses max_pens pens already
+            # however we must start from 1 since we only now care for ways that buy BOTH
+            
+            # Original solution in block comments 10 lines below was too slow
+            # Use hint: fix the number of pencils bought, then record how many pens may be bought
+            # Sum up the number of ways to buy pens for each amount of pencils purchased to get the answer.
+                for pencils_bought in range(1, (total // cost2) + 1):
+                    leftover_pen_budget = total - pencils_bought * cost2
+                    number_of_ways_to_buy_some_pens_also = leftover_pen_budget // cost1
+                   # print(number_of_ways_to_buy_some_pens_also, 'pens', pencils_bought, 'pencils')
+                    ways_to_buy_both += number_of_ways_to_buy_some_pens_also
+        
+            # TIME LIMIT EXCEEDED (original approach)
+        # =============================================================================
+        #         for number_pens in range(1, max_pens+1):
+        #             for number_pencils in range(1, max_pencils+1):
+        #                 if number_pens * cost1 + number_pencils * cost2 <= total:
+        #                     # print(number_pens, 'pens', number_pencils, 'pencils')
+        #                     # this generates 15 cases for total = 10, cost1 = 3, cost2 = 1
+        #                     # and then 1 + 3 + 10 + 15 = 26 which is the answer for (10,3,1)
+        #                     ways_to_buy_both += 1
+        # =============================================================================
+                final_ans = buy_neither + buy_pens_only + buy_pencils_only + ways_to_buy_both
+                return final_ans
+            # print(final_ans)
