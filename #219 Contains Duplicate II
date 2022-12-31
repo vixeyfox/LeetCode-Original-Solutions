@@ -1,0 +1,94 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Dec 31 10:52:50 2022
+
+@author: vixey foxwish
+"""
+# Solved 12/31/2022
+# Runtime 663 ms Beats 76%
+# Memory 25.4MB Beats 90.86%
+
+
+# =============================================================================
+# 219. Contains Duplicate II
+# Given an integer array nums and an integer k, return true if there are two 
+# distinct indices i and j in the array such that nums[i] == nums[j] and abs(i - j) <= k.
+# 
+# Example 1:
+#     
+# Input: nums = [1,2,3,1], k = 3
+# Output: true
+# 
+# Example 2:
+# 
+# Input: nums = [1,0,1,1], k = 1
+# Output: true
+# 
+# Example 3:
+# 
+# Input: nums = [1,2,3,1,2,3], k = 2
+# Output: false
+#  
+# 
+# Constraints:
+# 1 <= nums.length <= 10**5
+# -10**9 <= nums[i] <= 10**9
+# 0 <= k <= 10**5
+# =============================================================================
+nums = [1,2,3,1]
+k = 3
+class Solution:
+    def containsNearbyDuplicate(self, nums: List[int], k: int) -> bool:
+        # Pseucode implementation
+        # for each value, we have to track if it occurs again within at most k terms away
+            # make a set of numbers seen in the last k terms
+            # each time we see a number, add it to the set of numbers seen in the last k terms
+            # if the index is > k then remove the number seen k terms ago in nums
+            # effectively a sliding window, using a set
+        # if you find a number, but it's already in the set of numbers seen in the last k terms
+            # return true
+        # if you get to the end, but that case never occurred, then
+            # return false
+            
+        seen_recently = set()
+        for index in range(len(nums)):
+            
+            if index <= k:
+            # in the indices 0...k
+            # we do not need to remove numbers that were seen too long ago
+            # i.e. not in the last k terms
+            
+                if nums[index] not in seen_recently:
+                # a new number not seen before gets seen for the first time
+                    seen_recently.add(nums[index])
+                    
+                else:
+                # the number already was seen recently in the first k terms 
+                    return True
+                    
+            else:
+            # if index > k then we have some index-k-1 nonnegative index in the array that 
+            # was seen too long ago (more than k terms ago) so that it shouldn't be 
+            # kept around in the set of numbers seen_recently
+            # there's one more of these "too old numbers" each time index goes up by 1
+                too_old_number = nums[index-k-1]
+                seen_recently.remove(too_old_number)
+                
+        # now we check seen_recently set of nums[index-k] through nums[index]
+        # to see if any number is duplicated within a window of at most k index difference
+                if nums[index] not in seen_recently:
+                    # new number not seen in the last k terms 
+                    seen_recently.add(nums[index])
+                    
+                else:
+                # the number was already seen recently in the last k terms
+                    return True
+                    
+        # if the code gets down to here, there were no duplicated numbers within a 
+        # range of their indices being at most k apart from one another
+        return False
+        
+                
+            
+                    
+                    
