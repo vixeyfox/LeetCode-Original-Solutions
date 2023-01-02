@@ -1,0 +1,95 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jan  2 10:43:19 2023
+
+@author: vixey foxwish
+"""
+# Solved 1/2/2023
+# Runtime 60 ms Beats 74.10%
+# Memory 13.9 MB Beats 23.43%
+
+# =============================================================================
+# 1636. Sort Array by Increasing Frequency
+# 
+# Given an array of integers nums, sort the array in increasing order based on
+# the frequency of the values. If multiple values have the same frequency, 
+# sort them in decreasing order.
+# Return the sorted array.
+# 
+# Example 1:
+# 
+# Input: nums = [1,1,2,2,2,3]
+# Output: [3,1,1,2,2,2]
+# Explanation: '3' has a frequency of 1, '1' has a frequency of 2, and '2' has a frequency of 3.
+# Example 2:
+# 
+# Input: nums = [2,3,1,3,2]
+# Output: [1,3,3,2,2]
+# Explanation: '2' and '3' both have a frequency of 2, so they are sorted in decreasing order.
+# Example 3:
+# 
+# Input: nums = [-1,1,-6,4,5,-6,1,4,1]
+# Output: [5,-1,4,4,-6,-6,1,1,1]
+# 
+# Constraints:
+# 1 <= nums.length <= 100
+# -100 <= nums[i] <= 100
+# =============================================================================
+
+nums = [-39,27,27,-11,-39,-11,-11,27,-11,-26,-33,-26,-11,0,-11,0,-26,27,-39,-26,0,27,-33,-33,27,0,27,27,-33,0,-11,-26,-11]
+# Pseudocode Implementation
+# Make a frequency dictionary where keys = integers and values = frequencies
+# Sort the frequencies (ascending, low to high)
+# For each frequency, get the list of keys(integers) that occur with that frequency
+# Sort that set of keys (integers) that occur with that frequency in decreasing 
+# order, high to low
+# For each of those keys(integers), add it to the answer array * frequency number of times
+# Doing this in high to low order
+class Solution:
+    def frequencySort(self, nums: List[int]) -> List[int]:
+        frequency_dict = dict()
+        for index in range(len(nums)):
+            # if it has been seen before, record it showing up one more time
+            if nums[index] in frequency_dict.keys():
+                frequency_dict[nums[index]] += 1
+            else:
+            # if it has not yet been seen, record it as occuring once
+                frequency_dict[nums[index]] = 1
+        # Now sort the frequencies from low to high
+        ascending_frequencies = sorted(list(set(frequency_dict.values())))
+        # We will handle duplicates (numbers with same frequency) all at one time
+        # so we really want a set, not a list, to avoid duplicated effort at first
+        # then we get it back as a sorted list without duplicates 
+        
+        # Now for each frequency get a set of keys(integers) that occur with that frequency
+        # Do this by inverting the dictionary
+        inverse_dict = dict()
+        for key, value in frequency_dict.items():
+            if value not in inverse_dict.keys():
+        # if the frequency has not been recorded in the inverse dictionary yet
+                inverse_dict[value] = [key]
+            else:
+        # if there are other integers that occur with that same frequency, put in list
+                inverse_dict[value].append(key)
+        # now for each frequency (keys in the inverse dictionary)
+        # we want the integers occuring at that frequency to appear in descending order
+        # sort those lists as needed
+        for key, value in inverse_dict.items():
+            # use both to be able to change the values in the inverse dictionary
+            if len(value) > 1:
+                # now the numbers sharing the same frequency are sorted high to low
+                inverse_dict[key] = sorted(value)[::-1]
+        # now for each frequency in set of ascending frequencies, append the integers (decreasing order)
+        # that occur at that frequency, if there happen to be multiple ones that are tied
+        # to build up the answer as an array
+        answer = []
+        for frequency in ascending_frequencies:
+            # the keys of inverse_dict are frequencies at which numbers occur
+            # the values of inverse_dict are the numbers occurring at said frequency, descending order
+            tied_numbers = inverse_dict[frequency]
+            for number in tied_numbers:
+                for how_many_of_it in range(frequency):
+                    answer.append(number)
+        return answer
+        
+        #print(answer)
