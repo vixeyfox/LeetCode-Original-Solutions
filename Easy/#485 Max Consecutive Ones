@@ -1,0 +1,77 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Jan  7 09:37:19 2023
+
+@author: vixey foxwish
+"""
+# Solved 1/7/2023
+
+# if 1, elif 0
+# Runtime 372 ms Beats 74.47%
+# Memory 14.3 MB Beats 29.30%
+# if 1, else
+# Runtime 340 ms Beats 96.24%
+# Memory 14.2 MB Beats 71.80%
+
+
+# =============================================================================
+# 
+# 485. Max Consecutive Ones
+# Given a binary array nums, return the maximum number of consecutive 1's in the array.
+# 
+# Example 1:
+# 
+# Input: nums = [1,1,0,1,1,1]
+# Output: 3
+# 
+# Explanation: The first two digits or the last three digits are consecutive 1s. The maximum number of consecutive 1s is 3.
+# 
+# Example 2:
+# 
+# Input: nums = [1,0,1,1,0,1]
+# Output: 2
+# 
+# Constraints:
+# 
+# 1 <= nums.length <= 10**5
+# nums[i] is either 0 or 1.
+# =============================================================================
+# nums = [1,1,0,1,1,1]
+# gives 3 as it should
+# nums = [1,0,1,1,0,1]
+# gives 2 as it should
+
+# Pseudocode Implementation
+# iterate through array nums using for loop over the indices
+# begin at streak_of_1s of 0
+# check if each number is a 1
+# if yes, streak_of_1s += 1
+   # store best_so_far as the new length of streak_of_1s if it sets new record
+
+# if no, reset streak_of_1s back to 0 
+    # best_so_far gets updated each time there is a new 1
+class Solution:
+    def findMaxConsecutiveOnes(self, nums: List[int]) -> int:
+            
+        streak_of_1s = 0
+        best_so_far = 0 
+        for index in range(len(nums)):
+            # iterate through the array nums
+            if nums[index] == 1:
+                # if 1, then increment the streak of consecutive 1s up by 1
+                streak_of_1s += 1
+                
+                if streak_of_1s > best_so_far:
+                    # if it sets a new record, then record the new record
+                    best_so_far = streak_of_1s
+        
+            # elif nums[index] == 0: Beats 74.47% on runtime
+            else:
+            # with else, Beats 96.24% on runtime
+                # if 0, then reset the counter for 1s back to zero
+                streak_of_1s = 0
+                
+        return best_so_far
+
+# print(best_so_far, 'longest conseucutive streak of 1s')
+        
