@@ -1,0 +1,93 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jan 10 10:14:48 2023
+
+@author: vixey foxwish
+"""
+# Solved 1/10/2023
+# Runtime 243 ms Beats 93.20%
+# Memory 15.5 MB Beats 70.99%
+
+# =============================================================================
+# 704. Binary Search
+# Given an array of integers nums which is sorted in ascending order, and an
+# integer target, write a function to search target in nums. If target exists, 
+# then return its index. Otherwise, return -1.
+# You must write an algorithm with O(log n) runtime complexity.
+# 
+# Example 1:
+# Input: nums = [-1,0,3,5,9,12], target = 9
+# Output: 4
+# Explanation: 9 exists in nums and its index is 4
+# 
+# Example 2:
+# Input: nums = [-1,0,3,5,9,12], target = 2
+# Output: -1
+# Explanation: 2 does not exist in nums so return -1
+#  
+# Constraints:
+# 1 <= nums.length <= 10**4
+# -10**4 < nums[i], target < 10**4
+# All the integers in nums are unique.
+# nums is sorted in ascending order.
+# =============================================================================
+nums = [-1,0,3,5,9,12]
+target = 9
+# returns 4 as it should
+
+nums = [-1,0,3,5,9,12]
+target = 2
+# returns 2 as it should
+
+# Pseudocode Implementation 
+# This calls for the binary (bisection) search algorithm
+# especially since nums is already sorted in ascending order
+# start with low = 0 and high = len(nums) -1
+# guess = (low + high) // 2 to get an integer
+# if nums[guess] < target, we are too early in nums, and now low = guess
+# if nums[guess] > target, we are too late in nums, and now high = guess
+# start with guess = len(nums) - 1 // 2 (in len of 9, gets 0123 ... 4 ... 5678
+# use a while loop until we are done
+
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        low = 0
+        high = len(nums) - 1
+        guess = high
+# since the guess = (low + high) // 2 will round down, this is the only way to catch
+# if the target is the final value, as otherwise no guess would hit that exact place
+
+# if nums does not contain the target, stop at the max number of steps and
+# then return -1
+        steps = 0
+        # since max length is 10**4 which is betweeen 2**13 and 2**14, set limit of 15 steps (0-14)
+            
+        while nums[guess] != target and steps < 15:
+            # while the guess is not yet already on the target
+            # note that all numbers of unique and in ascending order
+            if nums[guess] < target:
+                # if we are too early in nums and target is further right (larger)
+                low = guess
+                # this incorrect guess becomes the new lower bound
+                guess = (low + high) // 2
+                # take a new average
+                steps += 1
+                
+            elif nums[guess] > target:
+                # if we are too late in nums and target is further left (smaller)
+                high = guess
+                # this incorrect guess becomes the new upper bound
+                guess = (low + high) // 2
+                # take a new average
+                steps += 1
+                
+    # should only break out of the above code when nums[guess] == target
+    # alternately, if the first guess is correct, it goes straight to the below code
+    
+    # check again just to be sure, error-checking code
+        if nums[guess] == target:
+            return guess
+        elif steps == 15:
+            return -1
+    
+        
