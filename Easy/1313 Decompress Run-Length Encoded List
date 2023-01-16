@@ -1,0 +1,82 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jan 16 11:00:04 2023
+
+@author: vixey foxwish
+"""
+# Solved 1/16/2023
+# Runtime 72ms Beats 71.72%
+# Memory 14.3 MB Beats 74.58%
+
+# =============================================================================
+# 
+# 1313. Decompress Run-Length Encoded List
+# 
+# We are given a list nums of integers representing a list compressed with run-length encoding.
+# Consider each adjacent pair of elements [freq, val] = [nums[2*i], nums[2*i+1]] 
+# (with i >= 0).  For each such pair, there are freq elements with value val
+# concatenated in a sublist. Concatenate all the sublists from left to right 
+# to generate the decompressed list.
+# Return the decompressed list.
+# 
+# Example 1:
+# 
+# Input: nums = [1,2,3,4]
+# Output: [2,4,4,4]
+# Explanation: The first pair [1,2] means we have freq = 1 and val = 2 so we generate the array [2].
+# The second pair [3,4] means we have freq = 3 and val = 4 so we generate [4,4,4].
+# At the end the concatenation [2] + [4,4,4] is [2,4,4,4].
+# Example 2:
+# 
+# Input: nums = [1,1,2,3]
+# Output: [1,3,3]
+#  
+# 
+# Constraints:
+# 
+# 2 <= nums.length <= 100
+# nums.length % 2 == 0
+# 1 <= nums[i] <= 100
+# =============================================================================
+
+# we want to break apart nums into the even indices (frequency of values)
+# and the odd indices (the values)
+# then for each value, append it to an answer (empty list at outset) to build array
+
+# nums = [1,2,3,4] # code below gives [2,4,4,4] as it should
+# nums = [1,1,2,3] # code below gives [1,3,3] as it should
+
+# pseudocode implementation
+# as in example of [1,2,3,4] the RLE of [2,4,4,4]
+# break apart into an array of frequencies [1,3] at even indices 0,2
+# and an array of values [2,4] at odd indices 1,3
+# then add 2 (once) and 4 (three times) using both lists together at same index
+# we know length of nums is even because we are given that it is 0 modulo 2
+
+class Solution:
+    def decompressRLElist(self, nums: List[int]) -> List[int]:
+        length_nums = len(nums)
+        # we only want an integer not the float that results from ordinary division of even length_nums
+        half = int(length_nums / 2)
+        # we want a list of the frequencies
+        frequencies = []
+        for frequency in range(half):
+            this_frequency = nums[2*frequency]
+            frequencies.append(this_frequency)
+        # we want a list of the values
+        values = []
+        for value in range(half):
+            this_value = nums[2*value + 1]
+            values.append(this_value)
+        # now we have arrays of frequnecies and values
+        # in the original list, each value occurred frequency times in a row
+        # build up the answer, a list of length half
+        answer = []
+        for index in range(half):
+            # count through both arrays with the same range of indices 0,1,...,half-1
+            for how_many in range(frequencies[index]):
+                # we want to append the value "frequencies[index]" number of times
+                answer.append(values[index])
+        return answer
+        # print(answer)
+            
