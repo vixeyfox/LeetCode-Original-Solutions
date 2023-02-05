@@ -1,0 +1,93 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Feb  5 10:41:00 2023
+
+@author: vixey foxwish 
+"""
+# Solved 2/5/2023
+# Runtime 40 ms Beats 83.13%
+# Memory 13.8 MB Beats 62.4%
+
+
+# =============================================================================
+# 
+# 2399. Check Distances Between Same Letters
+# 
+# You are given a 0-indexed string s consisting of only lowercase English letters, 
+# where each letter in s appears exactly twice. You are also given a 0-indexed integer array distance of length 26.
+# Each letter in the alphabet is numbered from 0 to 25 (i.e. 'a' -> 0, 'b' -> 1, 'c' -> 2, ... , 'z' -> 25).
+# In a well-spaced string, the number of letters between the two occurrences of the ith letter is distance[i]. 
+# If the ith letter does not appear in s, then distance[i] can be ignored.
+# Return true if s is a well-spaced string, otherwise return false.
+# 
+# Example 1:
+# 
+# Input: s = "abaccb", distance = [1,3,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+# Output: true
+# Explanation:
+# - 'a' appears at indices 0 and 2 so it satisfies distance[0] = 1.
+# - 'b' appears at indices 1 and 5 so it satisfies distance[1] = 3.
+# - 'c' appears at indices 3 and 4 so it satisfies distance[2] = 0.
+# Note that distance[3] = 5, but since 'd' does not appear in s, it can be ignored.
+# Return true because s is a well-spaced string.
+# 
+# Example 2:
+# 
+# Input: s = "aa", distance = [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+# Output: false
+# Explanation:
+# - 'a' appears at indices 0 and 1 so there are zero letters between them.
+# Because distance[0] = 1, s is not a well-spaced string.
+# 
+# Constraints:
+# 2 <= s.length <= 52
+# s consists only of lowercase English letters.
+# Each letter appears in s exactly twice.
+# distance.length == 26
+# 0 <= distance[i] <= 50
+# =============================================================================
+
+class Solution:
+    def checkDistances(self, s: str, distance: List[int]) -> bool:
+        s = "abaccb"
+        distance = [1,3,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        # Pseudocode Implementation
+        # iterate through the distance array and the alphabet simultaneously 'abc...xyz'
+        # get a, and the 'distance' for a
+        # s.find('a') gets first index of 'a'
+        # s.find('a', (that index+1)) gets second index of 'a'
+        # how many letters between them? second index, minus first index, plus 1 
+        # if it equals distance[0] for 'a' then keep going, else, return False
+        # get to the end without problems, return True
+        
+        # function that tells the how_far_apart of two letters in s
+        def how_far_apart(s: str, letter: str)-> int:
+            ''' tells how far apart two letters occur in string s'''
+            first_index = s.find(letter)
+            # the second index/occurrence must be after and distinct from the first
+            # we are told that s has each letter in it appear exactly twice
+            second_index = s.find(letter, first_index + 1)
+            # how many letters IN BETWEEN these? 01 -> 0 in between, 012 -> 1 in between
+            how_many_between = second_index - first_index - 1
+            return how_many_between
+        
+        alphabet = 'abcdefghijklmnopqrstuvwxyz'
+        for which_letter in range(26):
+            # keep track of what letter we are checking at the moment
+            this_letter = alphabet[which_letter]
+            # get the distance between first and second letter in s
+            # the letter must be in s for this to even be possible
+            if this_letter in s:
+                how_far = how_far_apart(s, this_letter)
+            # does this match the predicted distance from the distance array/list?
+                if distance[which_letter] == how_far:
+                    continue
+                    #print('good')
+                else:
+                    return False
+                    # print('bad', this_letter, which_letter, how_far, distance[which_letter])
+        # if it gets to the end it never found a counter example, then s is well-spaced
+        return True
+        #print('True')
+        
+        
