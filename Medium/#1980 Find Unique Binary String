@@ -1,0 +1,167 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Feb 10 14:17:12 2023
+
+@author: vixey foxwish
+"""
+
+# First solved with brute force 2/11/2023
+# Runtime 3095 ms Beats 5.13%
+# Memory 33.1 MB Beats 6.5%
+
+# Solved again with trivial guessing string extension algorithm 2/11/2023
+# Runtime 31 ms Beats 90%
+# Memory 13.9 MB Beats 44.87%
+
+# =============================================================================
+# 
+# 1980. Find Unique Binary String
+# Medium
+#
+# Given an array of strings nums containing n unique binary strings each of length n, 
+# return a binary string of length n that does not appear in nums.
+# If there are multiple answers, you may return any of them.
+# 
+# Example 1:
+# 
+# Input: nums = ["01","10"]
+# Output: "11"
+# Explanation: "11" does not appear in nums. "00" would also be correct.
+# Example 2:
+# 
+# Input: nums = ["00","01"]
+# Output: "11"
+# Explanation: "11" does not appear in nums. "10" would also be correct.
+# Example 3:
+# 
+# Input: nums = ["111","011","001"]
+# Output: "101"
+# Explanation: "101" does not appear in nums. "000", "010", "100", and "110" would also be correct.
+#  
+# 
+# Constraints:
+# 
+# n == nums.length
+# 1 <= n <= 16
+# nums[i].length == n
+# nums[i] is either '0' or '1'.
+# All the strings of nums are unique.
+# =============================================================================
+
+nums = ["11111", "01111", "00111", "11000", "00000"]
+
+# Pseudocode Implementation
+# 2**16 = 65536 possible strings, at most 16 disallowed -> almost all binary
+# strings of length 16 would in fact work!
+# also 2**5 = 32 possible strings, at most 5 disallowed -> 27/32 will work
+
+# have a brute force way to build up all possible binary strings of a given integer length
+# then for each of those, guess by elongating the remainder with all-0s or all-1s till it reaches length n
+    # making shortcut guesses of randomized leading digits and trailing all-0s or all-1s
+# making at least 32 guesses (in maximum n = 16 case) will work
+# making at least 16 guesses (in n = 15 case) will work
+# it is even faster for cases of lesser values of n, using this strategy
+
+
+class Solution:
+    def findDifferentBinaryString(self, nums: List[str]) -> str:
+        n = len(nums)
+        # now build at least n+1 unique binary strings of length n, at least 1 must be a winning answer
+        candidates = set()
+        zero = '0'
+        one = '1'
+        candidates.add(zero)
+        candidates.add(one)
+        
+        # handle trivial case as a special case
+        # isn't set up to be handled by "guess by elongation" strategy
+        if nums == ['1']:
+            return '0'
+        elif nums == ['0']:
+            return '1'
+        
+        def test(nums, candidates):
+            ''' tests if candidates contains a binary string not already in nums'''
+            if len(candidates) > len(nums):
+                # there must be more candidates than strings in nums for this to work
+                for candidate in candidates:
+                    if candidate in nums:
+                        nums.remove(candidate)
+                    else:
+                        # we found the winner; this string is True if seen as a bool
+                        return candidate
+            else:
+                # if there are not more strings in candidates than nums, probably not ready yet
+                return False
+            
+        # make a function that adds all-trailing-0s and all-trailing-1s to exist candidates
+        def trivial_elongate(n, candidates):
+            ''' since 65536 >> 16, take the candidates as they are and add all-0s and all-1s to the end '''
+            trivial_guesses = set()
+            how_long_so_far = len(candidates.pop())
+            # how long are the exhaustive ('00' '01' '10' '11' candidate strings so far)
+            digits_remaining = n - how_long_so_far
+            # how many more repreating digits we need to add to get a new string of length n
+            for candidate in candidates:
+                # guess by adding all of the same digit to the end of the candidate
+                guess_0s = candidate + '0' * digits_remaining
+                guess_1s = candidate + '1' * digits_remaining
+                # add these as "trivial guesses" to a new set
+                trivial_guesses.add(guess_0s)
+                trivial_guesses.add(guess_1s)
+            return trivial_guesses
+                
+            
+        
+        
+        step = 0
+        while step < n - 1:
+            step += 1
+            
+            to_be_added = set()
+            # Exhaustively generate all binary strings of length step + 1
+            for string_a in candidates:
+                # add 1,0 to each pre-existing string
+                plus_one = string_a + one
+                plus_zero = string_a + zero
+                # track the new strings to be added
+                to_be_added.add(plus_one)
+                to_be_added.add(plus_zero)
+                
+            # add the new growing strings into the set
+            for new_longer_string in to_be_added:
+                candidates.add(new_longer_string)
+            
+            
+            # remove the strings that are too small
+            get_rid_of = set()
+            for string_b in candidates:
+                if len(string_b) < step + 1:
+                    get_rid_of.add(string_b)
+                    
+            # get rid of the identified strings that are too short
+            for too_short_string in get_rid_of:
+                candidates.remove(too_short_string)
+                
+            # see if we can add all-0s or all-1s to an existing candidate and get a winner not in nums
+            trivial_guesses = trivial_elongate(n, candidates)
+            
+            attempt = test(nums, trivial_guesses)
+            # run the test using the trivial guesses
+            
+            if attempt:
+                # if we get anything other than bool(False), we have a winner
+                return attempt
+            
+            
+        
+            
+            
+            
+                
+                
+                
+                
+                
+                
+            
