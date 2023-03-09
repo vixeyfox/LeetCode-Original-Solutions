@@ -1,0 +1,119 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Mar  8 15:31:47 2023
+
+@author: vixey foxwish
+"""
+# Solved 3/9/2023
+# Runtime 423 ms Beats 42.95%
+# Memory 16.6 MB Beats 60.12%
+
+# =============================================================================
+# 
+# 2186. Minimum Number of Steps to Make Two Strings Anagram II
+# Medium
+# 
+# You are given two strings s and t. In one step, you can append any character to either s or t.
+# Return the minimum number of steps to make s and t anagrams of each other.
+# An anagram of a string is a string that contains the same characters with a
+#  different (or the same) ordering.
+# 
+#  
+# Example 1:
+# 
+# Input: s = "leetcode", t = "coats"
+# Output: 7
+# Explanation: 
+# - In 2 steps, we can append the letters in "as" onto s = "leetcode", forming s = "leetcodeas".
+# - In 5 steps, we can append the letters in "leede" onto t = "coats", forming t = "coatsleede".
+# "leetcodeas" and "coatsleede" are now anagrams of each other.
+# We used a total of 2 + 5 = 7 steps.
+# It can be shown that there is no way to make them anagrams of each other with less than 7 steps.
+# 
+# Example 2:
+# 
+# Input: s = "night", t = "thing"
+# Output: 0
+# Explanation: The given strings are already anagrams of each other. Thus, we do not need any further steps.
+#  
+# Constraints:
+# 
+# 1 <= s.length, t.length <= 2 * 105
+# s and t consist of lowercase English letters.
+# =============================================================================
+
+# coats
+# c1, o1, a1, t1, s1
+# leetcode
+# l1, e3, t1, c1, o1, d1
+# c1 o1 t1 are equal between coats and leetcode
+# so a1 s1 and l1 e3 d1 are the differences
+# so 2 + 5 is how many letters must be added to make them anagrams
+
+# frequency dictionaries... if equal return 0
+# else delete all letters of equal frequency
+# left only with letters of unequal frequency, look at the lesser freq
+# of each such letter, how many to make it equal to the higher freq letter
+# then add up all those differences
+# then you have the number of steps to make two strings anagrams
+s = "leetcode"
+t = "coats"
+# Define frequency dictionary function and call it on s and t
+# how many operations are needed is stored in counter
+counter = 0
+def frequency_dictionary(string: str):
+    '''
+    Converts a string into its frequency dictionary, where the keys are the 
+    letters inside the string, and the values are how many times that key
+    (letter) occurs within the string. This helps compare s and t later on.
+    '''
+    # initialize frequency dictionary
+    freq_dict = dict()
+    # iterate through string
+    for letter in string:
+        if letter in freq_dict:
+            # if letter was seen already
+            freq_dict[letter] += 1
+            # record it was seen again
+    # if letter was not seen already, record it for the first time
+        else:
+            freq_dict[letter] = 1
+    # now we get a frequency dictionary
+    return freq_dict
+# make frequency dictionaries
+s_dict = frequency_dictionary(s)
+t_dict = frequency_dictionary(t)
+# check if the words were already anagrams e.g. night and thing
+if s_dict == t_dict:
+    return 0
+else:
+    # now we know they are different
+    # disregard letters that occur at same frequency in both words; delete them
+    s_letters = set(s_dict.keys())
+    t_letters = set(t_dict.keys())
+    both_letters = s_letters & t_letters
+  
+# now our frequency dictionaries only contain letters that occur at different frequencies
+# now get all the letters that are ONLY found in one word and not the other
+s_only = s_letters - t_letters
+for s_only_letter in s_only:
+    # how many times the letter found only in s appears
+    how_many_unique_s = s_dict[s_only_letter]
+    # add that to the counter of letter additions needed
+    counter += how_many_unique_s
+
+t_only = t_letters - s_letters
+for t_only_letter in t_only:
+    how_many_unique_t = t_dict[t_only_letter]
+    counter += how_many_unique_t
+
+# NOW the dictionaries only contain letters that are found in both words
+# AND at different frequencies
+for shared_letter in both_letters:
+    # these are letters in both words at different frequencies
+    how_many_in_s = s_dict[shared_letter]
+    how_many_in_t = t_dict[shared_letter]
+    # get the difference between them
+    how_many_to_add = abs(how_many_in_s - how_many_in_t)
+    counter += how_many_to_add
+return counter
