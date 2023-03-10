@@ -1,0 +1,69 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Mar 10 09:25:36 2023
+
+@author: vixey foxwish
+"""
+
+# Solved 3/10/2023
+# Runtime 108 ms Beats 80.70%
+# Memory 14.1 MB Beats 89.45%
+
+# =============================================================================
+# 1572. Matrix Diagonal Sum
+# 
+# Given a square matrix mat, return the sum of the matrix diagonals.
+# Only include the sum of all the elements on the primary diagonal and all the 
+# elements on the secondary diagonal that are not part of the primary diagonal.
+# Example 1:
+# 
+# 
+# Input: mat = [[1,2,3],
+#               [4,5,6],
+#               [7,8,9]]
+# Output: 25
+# Explanation: Diagonals sum: 1 + 5 + 9 + 3 + 7 = 25
+# Notice that element mat[1][1] = 5 is counted only once.
+# 
+# Example 2:
+# 
+# Input: mat = [[1,1,1,1],
+#               [1,1,1,1],
+#               [1,1,1,1],
+#               [1,1,1,1]]
+# Output: 8
+# 
+# Example 3:
+# 
+# Input: mat = [[5]]
+# Output: 5
+# 
+# =============================================================================
+class Solution:
+    def diagonalSum(self, mat: List[List[int]]) -> int:
+        if n % 2 == 1:
+            # either square matrix is of odd dimension (must count center only once)
+            counter = 0
+            for integer in range(0, n):
+                # this counts from upper left to lower right
+                counter += mat[integer][integer]
+        
+            # now go and count lower left to upper right, skipping n // 2
+            # eg n = 9, 0123 4 5678, n//2 = 9//2 = 4 is the center element
+                if integer != n // 2:
+                    # starts at lower left and counts to upper right
+                    counter += mat[n-integer-1][integer]
+            
+            return counter
+        else:
+            # or square matrix is of even dimensions (just get diagonals twice)
+            counter = 0
+            # we know n is even and the diagonals won't intersect so we can count together
+            for integer in range(0,n):
+                counter += mat[n - integer - 1][integer]
+                counter += mat[integer][integer]
+            return counter
+            
+        
+
+        
