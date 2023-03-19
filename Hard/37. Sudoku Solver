@@ -1,0 +1,469 @@
+class Solution:
+    def solveSudoku(self, board: List[List[str]]) -> None:
+        """
+        Do not return anything, modify board in-place instead.
+        """
+       # -*- coding: utf-8 -*-
+        """
+        Created on Thu Mar  9 10:37:16 2023
+
+        @author: vixey foxwish
+        """
+        def print_board(board):
+            ''' This is a function which renders a Sudoku board in an easy-to-read format
+            for debugging while the solution is still in progress.'''
+            # Now print the board
+            print( '-' * 25 )
+            for row in range(9):
+                this_row = '| '
+                for col in range(9):
+                    if (col + 1) % 3 != 0:
+                        # if it's not end of a block of three
+                    # this_row += str(row) + ',' + str(col) + ' '
+                        this_row += board[row][col] + ' '
+                    
+                    else:
+                        # it hit end of a block of three
+                    # this_row += str(row) + ',' + str(col) + '  '
+                        this_row += board[row][col] + ' | '
+                    
+                # if it's not the end of a set of three rows
+                if (row + 1) % 3 != 0:
+                    print(this_row)
+                # if it did end of a block of three rows
+                else:
+                    print(this_row)
+                    print( '-' * 25 )
+
+        def valid_position(new_row, new_col, number):
+            ''' Checks if a number is valid to add in its given position.
+            Uses 0...8 as row and column indices across Sudoku board, takes number
+            to be added as an integer, even though the board uses string numbers. '''
+            
+            board[new_row][new_col] = '.'
+            
+            # Check if the row is valid (safe to add number into that new_row)
+            for col in range(9):
+                if board[new_row][col] == str(number):
+            # if the new_row we want to add to... has that number in any column already
+                    return False
+                
+            # Check if the column is valid (safe to add number into that new_column)
+            for row in range(9):
+                if board[row][new_col] == str(number):
+            # if the new_col we want to add to... has that number in any row already
+                    return False
+                
+            # figure out the start of the 3x3 block containing new_row, new_col
+            col_3x3_block = new_col // 3
+            row_3x3_block = new_row // 3
+            
+            start_col = col_3x3_block * 3
+            start_row = row_3x3_block * 3
+            
+            # iterate through the 3x3 block containing new_row, new_col
+            # new_row = (012) -> range(0,3) | (345) -> range(3,6) | (6,7,8) -> range(6,9)
+            
+            for row_3x3 in range(start_row, start_row + 3):
+        # new_col = (012) -> range(0,3) | (345) -> range(3,6) | (6,7,8) -> range(6,9)
+                for col_3x3 in range(start_col, start_col + 3):
+                # print(row_3x3, col_3x3, bd[row_3x3][col_3x3])
+                    if board[row_3x3][col_3x3] == str(number):
+                        # if number occurs in the 3x3 block around new_row, new_col
+                        return False
+            # if it gets to the end, it found no contradiction, so valid_position to add the number
+
+            board[new_row][new_col] = str(number)
+            return True
+        
+        # Come up with how many possible numbers can be put in one of the blank positions
+        # a = 1, b = 2, g = 7, h = 8, i = 9 ...
+        # if there's been a mistake and a place now has zero solutions, 0 = x (failure)
+        def letter_coding(board):
+            ''' This function takes a board and determines for each unsolved position, how many
+            possible numbers would be valid to insert in that spot. a = 1 meaning the next 
+            number to be added there is fully determined, b = 2, two choices, etc.
+            
+            It works by calling valid_position on each spot in the array, using range(1,10)
+            as the input new number, and if it is valid to put that number there, counter += 1
+            
+            When counter is finished, it uses alphanumeric dictionary 1: a, 2: b, etc. to get a letter.
+            Then it returns a board where letters fill the spaces not filled by numbers yet.'''
+            
+            alphanumeric = dict()
+            letters = 'abcdefghi'
+            for how_many in range(1,10):
+                # makes 1: 'a', 2: 'b', ... 9: 'i' dictionary
+                alphanumeric[how_many] = letters[how_many - 1]
+                alphanumeric[0] = 'x'
+                
+            
+            
+            for row in range(9):
+                # iterate through the whole board using 0...8 as the row, col indices
+                for col in range(9):
+                    # note we only care to add letter coding for positions that are not already solved
+                    if board[row][col] not in {'1', '2', '3', '4', '5', '6', '7', '8', '9'}:
+                        # now we want to know how many numbers 1...9 are valid to put there
+                        counter = 0
+                        for integer in range(1,10):
+                            # if it's a valid one to add to that position
+                            if valid_position(row, col, integer):
+                                counter += 1
+                        # will be at least 1 since it's guaranteed input board has only 1 solution
+                        coded_letter = alphanumeric[counter]
+                        # this letter tells how many numbers are valid to add there
+                        # now we put the letter in the letter_coded_board
+                        board[row][col] = coded_letter
+        def place_certain(board):
+            ''' After seeing letter_coding(board) and then print_board(board), we know 
+            how far we are from the solution, with a positions being uniquely determined, 
+            b positions having 2 possible solutions, etc. We work iteratively by looking 
+            for all the 'a' positions where only one unique number works but we don't know it yet.
+
+            Place the certain numbers in the board. For every 'a', put the unique number there. '''
+            
+            for row in range(9):
+                # iterate through all positions with 0...8 as row and column 
+                for col in range(9):
+                    # if it was one of the uniquely determined positions
+                    if board[row][col] == 'a':
+                        # get the one number out of 1...9 that works there
+                        for integer in range(1,10):
+                            if valid_position(row, col, integer):
+                                print('added', integer, 'at', row, col)
+                                board[row][col] = str(integer)
+                                break
+
+        def is_solved(bd):
+            ''' Function that checks if a sudoku board is solved.
+            Checks that every row is the set(range(1,10)), that every column is also
+            set(range(1,10)) and that every 3x3 block is set(range(1,10)).
+            
+            It does this by checking that each number at every position satisfies the
+            valid_position function which checks that these three rules are followed.
+            This way we only need the 3x3 blocking inside of one function, valid_position.
+            '''
+            
+            # Check that there is a number 1...9 in every place
+            for row in range(9):
+                for col in range(9):
+                    if bd[row][col] in {'1', '2', '3', '4', '5', '6', '7', '8', '9'}:
+                        # a number 1...9 that belongs there
+                        continue
+                    else:
+                        # print(row, col, 'oops at')
+                        # somethat that isn't a number 1...9 was in that spot
+                        return False
+            # Now check that every number is valid_position to put in its current position
+            for row in range(9):
+                for col in range(9):
+                    if valid_position(row, col, int(bd[row][col]) ):
+                        # the numbers are in valid positions as they are
+                        continue
+                    else:
+                        return False
+            # If it gets to the end without finding any violations (did not return False)
+            # then it is a valid board
+            return True
+
+            
+        def is_no_a(board):
+            ''' detects harder boards that have no 'a', no uniquely determined positions'''
+            for row in range(9):
+                # iterate through all positions with 0...8 as row and column 
+                for col in range(9):
+                    # if it was one of the uniquely determined positions
+                    if board[row][col] == 'a':
+                        return False
+            return True
+
+
+        def is_x(board):
+            ''' detects the board has reached a dead end due to incorrect guesses. any x
+            means a space where none of the 9 digits can work by now due to wrong guessing.
+            this means it's time to backtrack 1 step and replace that last (feasible) guess with 1 not 0.
+            May need to backtrack multiple steps if that also leads to an x.
+            '''
+            for row in range(9):
+                # iterate through all positions with 0...8 as row and column 
+                for col in range(9):
+                    # if it was one of the uniquely determined positions
+                    if board[row][col] == 'x':
+                        return True
+            return False
+
+
+        def find_first_b(board):
+            ''' when the board is such that there is no 'a' that can be known for certain
+            that is yet to be placed on the board, we need to find the first b where we
+            will venture a guess that gets logged in backtrack_list in case it turns out
+            to be wrong. ONLY run this function if there are no 'a' on the board. 
+            
+            This function finds where we must guess and what 2 guesses are allowed there.
+            
+            Returns the tuple (row, col) of the first 'b' on the board
+            Returns the (lo, hi) of the two possible guesses at that 'b' location
+            '''
+            # Error Checking: Is this function being used at the right time?
+            # Update letter coding of the board
+            letter_coding(board)
+            # Make sure there's really no a left to be found
+            if is_no_a(board):
+        # Then you know it's okay to be using find_first_b because guessing is forced here
+                for row in range(9):
+                    for col in range(9):
+                        if board[row][col] == 'b':
+                            # This finds the first b going line by line through board
+                            where_is_b = (row, col)
+                            # Now what are the two so-far-valid guesses there?
+                            # LeetCode tells us that our valid Sudoku puzzle has 1 solution
+                            what_might_b = []
+                            for guess_int in range(1,10):
+                                if valid_position(row, col, guess_int):
+                                    what_might_b.append(guess_int)
+                            # Return in tuple to match coordinate location and fix these two
+                            what_might_b = (what_might_b[0], what_might_b[1])
+                            return (where_is_b, what_might_b)
+        def progress_update(board):
+            ''' reads board and returns how many numbers are filled in so far'''
+            known_numbers = 0
+            for row in range(9):
+                for col in range(9):
+                    if board[row][col].isdigit():
+                        known_numbers += 1
+            return known_numbers
+                
+        # Now we write code to show the solution to the user as it occurs 
+        # useful for debugging
+        first_time = True
+        during_backtrack = False
+        avoid_duplicate = False
+        must_backtrack = False
+        must_delete_guess = False
+        saved_boards = []
+        while not is_solved(board):
+            # while the board is not solved
+            # Get letter coding for a = 1 possible number there, b = 2 possible, etc.
+            letter_coding(board)
+            # Show the correct letter coding to the user
+            print_board(board)
+            # Are there any uniquely determined positions 'a'? If yes, place certain!
+            if not is_no_a(board):
+                # Now see what numbers are uniquely determined, put them wherever 'a' is
+                place_certain(board)
+            else:
+                print('no uniquely determined positions. there are no a.')
+                
+                # Trial code to solve where there is no 'a' anywhere to be found
+                if not during_backtrack:
+                    # Save the board state as tuple (if it newly needs to be saved)
+                    # Does it match the last save yes or no
+                    # Save the board state as tuple (if it newly needs to be saved)
+                    # Does it match the last save yes or no
+                    if len(saved_boards) > 0:
+                        last_save = saved_boards[-1]
+                        match = 0
+                        for row in range(9):
+                            for col in range(9):
+                                if last_save[row][col] == board[row][col]:
+                                    match += 1
+                        if match == 81:
+                            avoid_duplicate = True
+                    if not avoid_duplicate:
+                        print('Not during backtrack, saving NEW board state')
+                        how_many_boards = len(saved_boards)
+                        known_numbers = progress_update(board)
+                        print('There were', how_many_boards, 'previous saved boards')
+                        print('This is save number', how_many_boards + 1)
+                        print('At this moment there are', known_numbers, 'on this saved board')
+                        
+                        saved_board = tuple(board)
+                        row_list = []
+                        for row in range(9):
+                            for col in range(9):
+                                saved_row = tuple(board[row])
+                            row_list.append(saved_row)
+                        saved_board = tuple(row_list)
+                                
+                        saved_boards.append(saved_board)
+                if first_time:
+                    known_numbers = progress_update(board)
+                    print(known_numbers, 'from all entries so far')
+                    # Initialize Backtrack List at the beginning only once
+                    backtrack_list = [ [known_numbers, ('row', 'col'), ('lo', 'hi'), 'guess lo 0 or hi 1']   ]
+                            
+                # Check if the current state of backtrack_list is still leading to a valid board with no 'x'
+                if not is_x(board):
+                    
+                    
+                    b_my_guess = find_first_b(board)
+                    
+                    known_numbers = progress_update(board)
+                    guessed_numbers = known_numbers + 1
+                    
+                    
+                    which = 0
+                    next_guess = [guessed_numbers, b_my_guess[0], b_my_guess[1], which]
+                    # Save the board state before taking the guess
+                    # ONLY if this is the first time hitting this branch point
+                    if not during_backtrack:
+                        # Save the board state as tuple (if it newly needs to be saved)
+                        # Does it match the last save yes or no
+                        if len(saved_boards) > 0:
+                            last_save = saved_boards[-1]
+                            match = 0
+                            for row in range(9):
+                                for col in range(9):
+                                    if last_save[row][col] == board[row][col]:
+                                        match += 1
+                            if match == 81:
+                                avoid_duplicate = True
+                        if not avoid_duplicate:
+                            print('Not during backtrack, saving NEW board state')
+                            how_many_boards = len(saved_boards)
+                            known_numbers = progress_update(board)
+                            print('There were', how_many_boards, 'previous saved boards')
+                            print('This is save number', how_many_boards + 1)
+                            print('At this moment there are', known_numbers, 'on this saved board')
+                            
+                            saved_board = tuple(board)
+                            row_list = []
+                            for row in range(9):
+                                for col in range(9):
+                                    saved_row = tuple(board[row])
+                                row_list.append(saved_row)
+                            saved_board = tuple(row_list)
+                                    
+                            saved_boards.append(saved_board)
+                    # find first b uses int for readability in readout, type cast guess back to str
+                    print('guessed ' + str(next_guess[2][next_guess[-1]]) + ' at ' + str(next_guess[1][0]) + ' ' + str(next_guess[1][1]) )
+                    board[next_guess[1][0]][next_guess[1][1]] = str(next_guess[2][next_guess[-1]])
+                    #
+                    backtrack_list.append(next_guess)
+                    first_time = False
+            
+                    letter_coding(board)
+                    print_board(board)
+                else:
+                    # This means there is an 'x' so the guessing has gone wrong
+                    # We want to print the backtrack list and mention we must go back
+                    including_wrong_guess = progress_update(board)
+                    print('at', including_wrong_guess, 'numbers of 81, we went wrong. must backtrack.')
+                    must_backtrack = True
+                    for guess in range(1, len(backtrack_list)):
+                        print('When we had solved', backtrack_list[guess][0], 'numbers')
+                        print('We saw', backtrack_list[guess][1][0], backtrack_list[guess][1][1], 'could only be')
+                        print('the number', backtrack_list[guess][2][0], 'or', backtrack_list[guess][2][1])
+                        print('We guessed 0 = lo, 1 = hi, coded as', backtrack_list[guess][-1], 'so we guessed (of 9)')
+                        print(backtrack_list[guess][2]  [backtrack_list[guess][-1]] )
+                     # if we still have not exhausted 1 the upper guess
+                    if backtrack_list[-1][-1] == 0:
+                        print('We only saw 1/2, the low guess, of what was possible at our last b guessing point.')
+                        print('Back then, we only knew', backtrack_list[-1][0], 'spaces out of 81.')
+                        print('Therefore we will go back to when we last guessed and guess again there.')
+                        during_backtrack = True
+                        rewrite_this = backtrack_list[-1]
+                        rewrite_this[-1] = 1
+                        print('Now we will guess the higher guess back at that time.')
+                                
+                        recover_board = [ [0]*9, [0]*9, [0]*9,  [0]*9, [0]*9, [0]*9,  [0]*9, [0]*9, [0]*9  ]
+                        for row in range(9):
+                            for col in range(9):
+                                recover_board[row][col] = saved_boards[-1][row][col]
+                            
+                                
+                        board = [ [0]*9, [0]*9, [0]*9,  [0]*9, [0]*9, [0]*9,  [0]*9, [0]*9, [0]*9  ]
+                        for row in range(9):
+                            for col in range(9):
+                                board[row][col] = recover_board[row][col]
+                        which = 1
+                        next_guess = [guessed_numbers, b_my_guess[0], b_my_guess[1], which]
+                        # find first b uses int for readability in readout, type cast guess back to str
+                        print('guessed ' + str(next_guess[2][next_guess[-1]]) + ' at ' + str(next_guess[1][0]) + ' ' + str(next_guess[1][1]) )
+                        board[next_guess[1][0]][next_guess[1][1]] = str(next_guess[2][next_guess[-1]])
+
+                        backtrack_list.append(next_guess)
+
+                    elif backtrack_list[-1][-1] == 1 and must_backtrack:
+                        must_delete_guess = True
+                        print('wow, that was bad. this is deliverance. now we must delete a previous guess entirely.')
+                        print('because it did not work when guessing neither lo nor hi')
+            if is_x(board):
+                # We were at a stuck board with the last 'lo' guess and must now backtrack. 
+                # Clear out duplicates from the end of backtrack_list until we get a unique branch point
+                # Basic housekeeping task
+                how_far_back = len(backtrack_list)
+                for index in range(how_far_back-1):
+                    if backtrack_list[index] == backtrack_list[index + 1]:
+                        backtrack_list.pop()
+                        print('popped duplicate backtrack_list endpoint')
+                        break
+                if backtrack_list[-1][-1] == 1:
+                    # Now we recover back to where we begin the guess with this
+                    branch_at = backtrack_list[-1][0] - 1
+                    # this was how many numbers had been solved at the point we must return to
+                    how_many_saves = len(saved_boards)
+                    for recent_save in range(how_many_saves -1, -1, -1):
+                        # count back to where saved_boards[recent_save] is the second valid match
+                        # We want the one where there is a period in the spot of the find_first_b we want to guess
+                        if progress_update(saved_boards[recent_save]) == branch_at:
+                            print("Recovering previous saved board during backtracking")
+                            print(backtrack_list[-1], 'is backtrack list')
+                            print(branch_at, 'matches progress update of this recent_save')
+                            recover_board = [ [0]*9, [0]*9, [0]*9,  [0]*9, [0]*9, [0]*9,  [0]*9, [0]*9, [0]*9  ]
+                            for row in range(9):
+                                for col in range(9):
+                                    recover_board[row][col] = saved_boards[-1][row][col]
+                                
+                                    
+                            board = [ [0]*9, [0]*9, [0]*9,  [0]*9, [0]*9, [0]*9,  [0]*9, [0]*9, [0]*9  ]
+                            for row in range(9):
+                                for col in range(9):
+                                    board[row][col] = recover_board[row][col]
+                            # NOW put in the new guess and get back to work
+                            for row in range(9):
+                                for col in range(9):
+                                    if board[row][col] == '.':
+                                        print('The magic moment of backtracking is now here.')
+                                        next_guess = backtrack_list[-1]
+                                        board[next_guess[1][0]][next_guess[1][1]] = str(next_guess[2][next_guess[-1]])
+                        elif len(saved_boards) > 2:
+                            # The other saved boards are too recent compared to where we must backtrack to
+                            # AND we can still go back further in time safely without losing everything
+                            print('popped a saved board of', progress_update(saved_boards[-1]))
+                            saved_boards.pop()
+            if must_backtrack and must_delete_guess:
+                print('Aha now we must delete from the backtrack list. Breaking free.')
+                for back in backtrack_list:
+                    print(back)
+                print('The wrong guess/spot with neither lo nor hi valid was popped from backtrack list.')
+                backtrack_list.pop()
+                for back in backtrack_list:
+                    print(back)
+                #must_backtrack = False
+                must_delete_guess = False
+        
+        # it gets here when board is solved
+        if is_solved(board):
+            letter_coding(board)
+            print_board(board)
+            print('Board is now solved')
+            answer = tuple(board)
+            row_list = []
+            for row in range(9):
+                for col in range(9):
+                    valid_row = tuple(board[row])
+                row_list.append(valid_row)
+            answer = tuple(row_list)
+            for row in range(9):
+                for col in range(9):
+                    board[row][col] = answer[row][col]
+            print('Are you happy now, LeetCode?')
+
+        # print_board(board)
+        else:
+            print('board not solved, exited program')
+            print_board(board)
+            final_count = progress_update(board)
+            print(final_count, 'by the end')
