@@ -1,0 +1,52 @@
+# -*- coding: utf-8 -*-
+"""
+ Solved in LeetCode console on 3/16/2023 and written up in Spyder afterward
+@author: vixey foxwish
+"""
+# Solved 3/16/2023
+# Runtime 35 ms Beats 64.52%
+# Memory Usage 13.9 MB Beats 89.20%
+
+# =============================================================================
+# 686. Repeated String Match
+# Medium
+# 
+# Given two strings a and b, return the minimum number of times you should repeat 
+# string a so that string b is a substring of it. If it is impossible for b​​​​​​ to be 
+# a substring of a after repeating it, return -1.
+# 
+# Notice: string "abc" repeated 0 times is "", repeated 1 time is "abc" and repeated 2 times is "abcabc".
+# 
+# 
+# 
+# Example 1:
+# 
+# Input: a = "abcd", b = "cdabcdab"
+# Output: 3
+# Explanation: We return 3 because by repeating a three times "abcdabcdabcd", b is a substring of it.
+# Example 2:
+# 
+# Input: a = "a", b = "aa"
+# Output: 2
+#  
+# 
+# Constraints:
+# 
+# 1 <= a.length, b.length <= 10^4
+# a and b consist of lowercase English letters.
+# =============================================================================
+
+class Solution:
+    def repeatedStringMatch(self, a: str, b: str) -> int:
+        # if b is the longer one... then
+        # we have to repeat a some number of times to make b fit inside of it
+        # think of floor division as the baseline, then +3 (before, inside, after)
+        how_many_max = (len(b) // len(a)) + 3
+        for integer in range(1,how_many_max):
+            # keep working up to the upper bound
+            # and test if b is in a repeated that many times
+            if b in a*integer:
+                # that is the lowest number of repeats of a for b to fit inside
+                return integer
+        # cannot be done for arbitrarily large a if it gets down to here
+        return -1
