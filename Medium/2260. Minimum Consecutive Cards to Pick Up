@@ -1,0 +1,85 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Apr  5 12:13:54 2023
+
+@author: vixey foxwish
+"""
+# Solved 4/5/2023
+# Runtime 803 ms Beats 95.23%
+# Memory 33.5 MB Beats 66.46%
+
+# =============================================================================
+# 2260. Minimum Consecutive Cards to Pick Up
+# Medium
+# 
+# You are given an integer array cards where cards[i] represents the value of the
+#  ith card. A pair of cards are matching if the cards have the same value.
+# 
+# Return the minimum number of consecutive cards you have to pick up to have a 
+# pair of matching cards among the picked cards. If it is impossible to have 
+# matching cards, return -1.
+# 
+#  
+# 
+# Example 1:
+# 
+# Input: cards = [3,4,2,3,4,7]
+# Output: 4
+# Explanation: We can pick up the cards [3,4,2,3] which contain a matching pair 
+# of cards with value 3. Note that picking up the cards [4,2,3,4] is also optimal.
+# Example 2:
+# 
+# Input: cards = [1,0,5,3]
+# Output: -1
+# Explanation: There is no way to pick up a set of consecutive cards that contain
+#  a pair of matching cards.
+#  
+# 
+# Constraints:
+# 
+# 1 <= cards.length <= 105
+# 0 <= cards[i] <= 106
+# =============================================================================
+cards = [3,4,2,3,4,7]
+cards = [1, 0, 4]
+
+
+answer = -1
+# default answer unless we find two cards with same value
+
+# for each number you see, record when it was last seen
+seen_where = dict()
+# keys: numbers, values: the index it was last seen at
+# each time you see a number that was seen already, record that card_dist
+# and set a new record if it sets a new record (running best record so far var)
+# don't forget to log number as seen_where entry again in case it happens later too
+
+shortest_dist = len(cards) + 1
+# impossible and makes sure any valid pair (even first and last, entire set)
+# will be detected by comparison against this "worst than worse case" number
+
+for index in range(len(cards)):
+    # did you see a new number for the first time
+    if cards[index] not in seen_where:
+        seen_where[cards[index]] = index
+        
+    else:
+        # the card was seen before
+        last_seen = seen_where[cards[index]]
+        
+        # how long (card_dist) between then and now
+        card_dist = index - last_seen + 1
+        # total number of cards to pick up indices 012 is 3 cards i.e. 2-0+1
+        
+        # does it set a new record for shortest dist btw cards of same value?
+        if card_dist < shortest_dist:
+            shortest_dist = card_dist
+            
+        # log it again in case it comes up again
+        seen_where[cards[index]] = index
+        
+# did we see a pair or not
+if shortest_dist < len(cards) + 1:
+    answer = shortest_dist
+# if not, then answer stays -1 as it is impossible
+return answer     
